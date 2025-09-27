@@ -5,9 +5,9 @@ import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/c
 import { theme } from '../theme';
 
 export const metadata = {
-  title: 'Путь к настоящей свободе',
+  title: 'Путь к освобождению',
   description:
-    'Освободи ум от страдания и обрети счастье с помощью лучших идей буддизма, стоицизма и психологии',
+    'Обретите эмоциональный покой и свободу благодаря проверенным инструментам психологии, философии и буддизма.',
 };
 
 export default function RootLayout({ children }: { children: any }) {
@@ -22,7 +22,9 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProvider theme={theme} defaultColorScheme="dark">
+          {children}
+        </MantineProvider>
       </body>
     </html>
   );
