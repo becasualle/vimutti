@@ -1,21 +1,30 @@
-import { Anchor, Text, Title } from '@mantine/core';
+import Link from 'next/link';
+import { Anchor, Center, Text, Title } from '@mantine/core';
 import classes from './Welcome.module.css';
 
 export function Welcome() {
   return (
     <>
-      <Title className={classes.title} ta="center" mt={100}>
-        Привет,{' '}
-        <Text inherit variant="gradient" component="span" gradient={{ from: 'pink', to: 'yellow' }}>
-          Арина!
+      <Center h="100vh" style={{ flexDirection: 'column', marginTop: '-5%' }}>
+        <Title className={classes.title} ta="center" mt={100}>
+          Путь к{' '}
+          <Text
+            inherit
+            variant="gradient"
+            component="span"
+            gradient={{ from: 'red', to: 'blue', deg: 50 }}
+          >
+            освобождению
+          </Text>
+        </Title>
+        <Text c="dimmed" ta="center" size="lg" maw={580} mx="auto" mt="xl">
+          Обретите эмоциональный покой и свободу благодаря проверенным инструментам психологии,
+          философии и буддизма. Начните с{' '}
+          <Anchor href="/magazine/four-noble-truths" size="lg" component={Link}>
+            четырёх благородных истин буддизма.
+          </Anchor>
         </Text>
-      </Title>
-      <Text c="dimmed" ta="center" size="lg" maw={580} mx="auto" mt="xl">
-        Здесь будет вся топовая инфа по буддизму (и не только). По всем вопросам обращайся{' '}
-        <Anchor href="https://t.me/Millk04Arinka" size="lg">
-          к моей ассистентке.
-        </Anchor>
-      </Text>
+      </Center>
     </>
   );
 }
