@@ -11,10 +11,9 @@ type ArticleLayoutProps = {
 export default function ArticleLayout({ children, title }: ArticleLayoutProps) {
   return (
     <Container
-      size="md"
-      px={{ base: 'md', sm: 'lg', lg: 'xl' }}
-      py="xl"
+      maw={740}
       style={{ lineHeight: 1.7 }}
+      px={{ base: 16, xs: 24, sm: 32, md: 48, lg: 0 }}
     >
       <article>
         {title && <h1 style={{ marginBottom: '1.5rem' }}>{title}</h1>}
