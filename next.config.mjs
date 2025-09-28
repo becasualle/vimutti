@@ -1,6 +1,8 @@
 import bundleAnalyzer from '@next/bundle-analyzer';
 import createMDX from '@next/mdx';
+import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
+import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -8,7 +10,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const withMDX = createMDX({
   options: {
-    remarkPlugins: [remarkGfm],
+    remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
     rehypePlugins: [],
   },
   extension: /\.(md|mdx)$/,
