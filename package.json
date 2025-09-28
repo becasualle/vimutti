@@ -30,7 +30,8 @@
     "@types/mdx": "^2.0.13",
     "next": "15.5.3",
     "react": "19.1.1",
-    "react-dom": "19.1.1"
+    "react-dom": "19.1.1",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.28.4",
