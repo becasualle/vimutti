@@ -1,3 +1,5 @@
+import { readdirSync } from 'fs';
+import path from 'path';
 import ArticleLayout from '../ArticleLayout';
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
@@ -11,8 +13,23 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   );
 }
 
+function getAllSlugs() {
+  const articlesDirectory = path.join(process.cwd(), 'app/content/articles');
+  try {
+    const filenames = readdirSync(articlesDirectory);
+    return filenames
+      .filter((filename) => filename.endsWith('.mdx'))
+      .map((filename) => filename.replace(/\.mdx$/, ''));
+  } catch (error) {
+    return [];
+  }
+}
+
 export function generateStaticParams() {
-  return [{ slug: 'four-noble-truths' }];
+  const slugs = getAllSlugs();
+  return slugs.map((slug) => ({
+    slug,
+  }));
 }
 
 export const dynamicParams = false;
