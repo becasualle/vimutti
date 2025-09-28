@@ -21,7 +21,11 @@ export function Welcome() {
           Обретите эмоциональный покой и свободу благодаря проверенным инструментам психологии,
           философии и буддизма. Начните с{' '}
           <Anchor href="/magazine/four-noble-truths" size="lg" component={Link}>
-            четырёх благородных истин.
+            четырёх благородных истин{' '}
+          </Anchor>
+          или{' '}
+          <Anchor href="/magazine/doc" size="lg" component={Link}>
+            дихотомии контроля.
           </Anchor>
         </Text>
       </Center>
