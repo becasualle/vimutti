@@ -1,6 +1,7 @@
 import '@mantine/core/styles.css';
 
 import React from 'react';
+import { Analytics } from '@vercel/analytics/next';
 import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
 import { theme } from '../theme';
 
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: any }) {
       <body>
         <MantineProvider theme={theme} defaultColorScheme="dark">
           {children}
+          <Analytics />
         </MantineProvider>
       </body>
     </html>
