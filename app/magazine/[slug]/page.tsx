@@ -4,10 +4,11 @@ import ArticleLayout from '../ArticleLayout';
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const { default: Post } = await import(`@/app/content/articles/${slug}.mdx`);
+  const { default: Post, frontmatter } = await import(`@/app/content/articles/${slug}.mdx`);
 
+  const title = frontmatter?.title ?? '';
   return (
-    <ArticleLayout>
+    <ArticleLayout title={title}>
       <Post />
     </ArticleLayout>
   );
