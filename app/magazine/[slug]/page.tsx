@@ -18,9 +18,12 @@ function getAllSlugs() {
   const articlesDirectory = path.join(process.cwd(), 'app/content/articles');
   try {
     const filenames = readdirSync(articlesDirectory);
-    return filenames
-      .filter((filename) => filename.endsWith('.mdx'))
-      .map((filename) => filename.replace(/\.mdx$/, ''));
+
+    const mdxFiles = filenames.filter((filename) => filename.endsWith('.mdx'));
+
+    return mdxFiles.map((filename) => ({
+      slug: filename.replace(/\.mdx$/, ''),
+    }));
   } catch (error) {
     return [];
   }
@@ -28,8 +31,8 @@ function getAllSlugs() {
 
 export function generateStaticParams() {
   const slugs = getAllSlugs();
-  return slugs.map((slug) => ({
-    slug,
+  return slugs.map((item) => ({
+    slug: item.slug,
   }));
 }
 
