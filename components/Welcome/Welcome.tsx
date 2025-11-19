@@ -20,11 +20,11 @@ export function Welcome() {
         <Text c="dimmed" ta="center" size="lg" maw={580} mx="auto" mt="xl">
           Обретите эмоциональный покой и свободу благодаря проверенным инструментам психологии,
           философии и буддизма. Начните с{' '}
-          <Anchor href="/magazine/four-noble-truths" size="lg" component={Link}>
+          <Anchor href="magazine/buddhism/four-noble-truths" size="lg" component={Link}>
             четырёх благородных истин{' '}
           </Anchor>
           или{' '}
-          <Anchor href="/magazine/doc" size="lg" component={Link}>
+          <Anchor href="/magazine/stoicism/doc" size="lg" component={Link}>
             дихотомии контроля.
           </Anchor>
         </Text>
