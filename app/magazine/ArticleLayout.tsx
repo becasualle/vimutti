@@ -1,7 +1,4 @@
-'use client';
-
 import { ReactNode } from 'react';
-import { Container, Text, Title } from '@mantine/core';
 
 type ArticleLayoutProps = {
   children: ReactNode;
@@ -10,23 +7,20 @@ type ArticleLayoutProps = {
 
 export default function ArticleLayout({ children, title }: ArticleLayoutProps) {
   return (
-    <Container
-      maw={740}
+    <div
+      className="max-w-[740px] mx-auto px-4 sm:px-6 md:px-12 lg:px-0 my-12 lg:my-16"
       style={{ lineHeight: 1.7 }}
-      px={{ base: 16, xs: 24, sm: 32, md: 48, lg: 0 }}
-      my={{ base: 48, lg: 64 }}
     >
       <article>
         {title && (
-          <Title order={1} mb="lg">
-            <Text gradient={{ from: 'blue', to: 'cyan', deg: 171 }} variant="gradient" inherit>
-              {' '}
+          <h1 className="mb-6">
+            <span className="bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
               {title}
-            </Text>
-          </Title>
+            </span>
+          </h1>
         )}
         {children}
       </article>
-    </Container>
+    </div>
   );
 }
