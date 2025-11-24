@@ -38,6 +38,12 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --text-h1: 2.25rem; /* 36px */
+  --text-h2: 1.75rem; /* 28px */
+  --text-h3: 1.5rem; /* 24px */
+  --text-h4: 1.25rem; /* 20px */
+  --text-h5: 1.125rem; /* 18px */
 }
 
 :root {
@@ -129,10 +135,36 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
+  h1 {
+    @apply text-h1 leading-tight font-bold mt-8 mb-4;
+  }
+
+  h2 {
+    @apply text-h2 leading-tight font-semibold mt-6 mb-3;
+  }
+
+  h3 {
+    @apply text-h3 leading-tight font-semibold mt-5 mb-3;
+  }
+
+  h4 {
+    @apply text-h4 leading-tight font-medium mt-4 mb-2;
+  }
+
+  h5 {
+    @apply text-h5 leading-tight font-medium mt-4 mb-2;
+  }
+
   p {
-    @apply my-4;
+    @apply leading-normal font-normal my-4;
+  }
+
+  small {
+    @apply text-sm leading-normal;
   }
 }
