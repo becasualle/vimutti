@@ -167,4 +167,20 @@
   small {
     @apply text-sm leading-normal;
   }
+
+  ul {
+    @apply list-disc list-inside pl-5 space-y-2 leading-relaxed my-4;
+  }
+
+  ol {
+    @apply list-decimal list-inside my-4;
+  }
+
+  li {
+    @apply my-1;
+  }
+
+  li p {
+    @apply inline my-0;
+  }
 }
