@@ -7,7 +7,7 @@ export function Welcome() {
       className="flex h-screen flex-col items-center justify-center"
       style={{ marginTop: '-5%' }}
     >
-      <h1 className="text-center font-black tracking-[-2px] mt-[100px]">
+      <h1 className="text-center text-6xl font-black leading-tight tracking-[-2px] lg:text-8xl  mt-[100px]">
         Путь к{' '}
         <span className="bg-gradient-to-r from-red-500 to-blue-500 bg-clip-text text-transparent">
           освобождению
