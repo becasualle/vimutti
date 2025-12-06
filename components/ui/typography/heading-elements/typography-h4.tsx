@@ -8,7 +8,7 @@ interface TypographyH4Props {
 
 export function TypographyH4({ children, className }: TypographyH4Props) {
   return (
-    <h4 className={cn('scroll-m-20 text-xl font-semibold tracking-tight', className)}>
+    <h4 className={cn('scroll-m-20 text-xl font-semibold tracking-tight mt-6', className)}>
       {children}
     </h4>
   );

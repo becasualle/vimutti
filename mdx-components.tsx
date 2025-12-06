@@ -1,14 +1,18 @@
 import Link from 'next/link';
 import type { MDXComponents } from 'mdx/types';
-import { TypographyH1 } from '@/components/ui/typography/heading-elements/typography-h1';
-import { TypographyH2 } from '@/components/ui/typography/heading-elements/typography-h2';
-import { TypographyH3 } from '@/components/ui/typography/heading-elements/typography-h3';
-import { TypographyP } from '@/components/ui/typography/heading-elements/typography-h4 copy 3';
+import {
+  TypographyH1,
+  TypographyH2,
+  TypographyH3,
+  TypographyH4,
+  TypographyP,
+} from '@/components/ui/typography';
 
 const components: MDXComponents = {
   h1: TypographyH1,
   h2: TypographyH2,
   h3: TypographyH3,
+  h4: TypographyH4,
   p: TypographyP,
   a: (props) => (
     <Link
