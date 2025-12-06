@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { MDXComponents } from 'mdx/types';
 import {
+  TypographyBlockquote,
   TypographyH1,
   TypographyH2,
   TypographyH3,
@@ -16,6 +17,7 @@ const components: MDXComponents = {
   h4: TypographyH4,
   p: TypographyP,
   ul: TypographyList,
+  blockquote: TypographyBlockquote,
   ol: (props) => <TypographyList {...props} tag="ol" />,
   a: (props) => (
     <Link
