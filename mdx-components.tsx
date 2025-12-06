@@ -8,6 +8,12 @@ import {
   TypographyH4,
   TypographyList,
   TypographyP,
+  TypographyTable,
+  TypographyTableBody,
+  TypographyTableCell,
+  TypographyTableHead,
+  TypographyTableHeader,
+  TypographyTableRow,
 } from '@/components/ui/typography';
 
 const components: MDXComponents = {
@@ -20,6 +26,12 @@ const components: MDXComponents = {
   blockquote: TypographyBlockquote,
   ol: (props) => <TypographyList {...props} tag="ol" />,
   a: (props) => <ButtonLink {...props} className="p-0" />,
+  table: TypographyTable,
+  thead: TypographyTableHead,
+  tbody: TypographyTableBody,
+  tr: TypographyTableRow,
+  th: TypographyTableHeader,
+  td: TypographyTableCell,
 };
 
 export function useMDXComponents(): MDXComponents {
