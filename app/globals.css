@@ -168,12 +168,17 @@
     @apply text-sm leading-normal;
   }
 
+  ul,
+  ol {
+    @apply ps-5 space-y-2 leading-relaxed my-4;
+  }
+
   ul {
-    @apply list-disc list-inside pl-5 space-y-2 leading-relaxed my-4;
+    @apply list-disc;
   }
 
   ol {
-    @apply list-decimal list-inside my-4;
+    @apply list-decimal;
   }
 
   li {
