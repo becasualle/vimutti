@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { TypographyH1 } from '@/components/ui/typography/heading-elements/typography-h1';
 
 type ArticleLayoutProps = {
   children: ReactNode;
@@ -13,11 +14,11 @@ export default function ArticleLayout({ children, title }: ArticleLayoutProps) {
     >
       <article>
         {title && (
-          <h1 className="mb-6">
+          <TypographyH1 className="mb-6">
             <span className="bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
               {title}
             </span>
-          </h1>
+          </TypographyH1>
         )}
         {children}
       </article>
