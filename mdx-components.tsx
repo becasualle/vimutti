@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import type { MDXComponents } from 'mdx/types';
+import { ButtonLink } from '@/components/ui/button-link';
 import {
   TypographyBlockquote,
   TypographyH1,
@@ -19,13 +19,7 @@ const components: MDXComponents = {
   ul: TypographyList,
   blockquote: TypographyBlockquote,
   ol: (props) => <TypographyList {...props} tag="ol" />,
-  a: (props) => (
-    <Link
-      {...props}
-      className="text-lg text-primary underline-offset-4 hover:underline"
-      target="_blank"
-    />
-  ),
+  a: (props) => <ButtonLink {...props} className="p-0" />,
 };
 
 export function useMDXComponents(): MDXComponents {
