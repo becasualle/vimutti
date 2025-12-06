@@ -39,13 +39,6 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-
-  /* Custom text size variables - not in default shadcn/ui */
-  /* --text-h1: 2.25rem; 36px */
-  /* --text-h2: 1.75rem; 28px */
-  /* --text-h3: 1.5rem; 24px */
-  /* --text-h4: 1.25rem; 20px */
-  /* --text-h5: 1.125rem; 18px */
 }
 
 :root {
@@ -82,19 +75,6 @@
   --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
   --sidebar-border: oklch(0.923 0.003 48.717);
   --sidebar-ring: oklch(0.709 0.01 56.259);
-  /* Custom spacing, shadow, color, and easing variables - not in default shadcn/ui */
-  /* --spacing-xs: 0.5rem; */
-  /* --spacing-sm: 0.75rem; */
-  /* --spacing-md: 1rem; */
-  /* --spacing-lg: 1.5rem; */
-  /* --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05); */
-  /* --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1); */
-  /* --success: oklch(0.723 0.219 149.579); */
-  /* --warning: oklch(0.769 0.188 70.08); */
-  /* --info: oklch(0.696 0.17 162.48); */
-  /* --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1); */
-  /* --ease-out: cubic-bezier(0, 0, 0.2, 1); */
-  /* --ease-in: cubic-bezier(0.4, 0, 1, 1); */
 }
 
 .dark {
@@ -130,9 +110,6 @@
   --sidebar-accent-foreground: oklch(0.985 0.001 106.423);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.553 0.013 58.071);
-  /* Custom shadow variables - not in default shadcn/ui */
-  /* --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2); */
-  /* --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3); */
 }
 
 @layer base {
@@ -143,54 +120,4 @@
   body {
     @apply bg-background text-foreground text-[15px];
   }
-
-  /* Custom typography styles - not in default shadcn/ui */
-  /* h1 {
-    @apply text-h1 leading-tight font-bold mt-8 mb-4;
-  }
-
-  h2 {
-    @apply text-h2 leading-tight font-semibold mt-6 mb-3;
-  }
-
-  h3 {
-    @apply text-h3 leading-tight font-semibold mt-5 mb-3;
-  }
-
-  h4 {
-    @apply text-h4 leading-tight font-medium mt-4 mb-2;
-  }
-
-  h5 {
-    @apply text-h5 leading-tight font-medium mt-4 mb-2;
-  }
-
-  p {
-    @apply leading-normal font-normal my-4;
-  }
-
-  small {
-    @apply text-sm leading-normal;
-  }
-
-  ul,
-  ol {
-    @apply ps-5 space-y-2 leading-relaxed my-4;
-  }
-
-  ul {
-    @apply list-disc;
-  }
-
-  ol {
-    @apply list-decimal;
-  }
-
-  li {
-    @apply my-1;
-  }
-
-  li p {
-    @apply inline my-0;
-  } */
 }
