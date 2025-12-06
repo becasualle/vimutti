@@ -10,7 +10,7 @@ export function Welcome() {
       <h1 className="text-center text-6xl font-black leading-tight tracking-[-2px] lg:text-8xl  mt-[100px]">
         Путь к{' '}
         <span className="bg-gradient-to-r from-red-500 to-blue-500 bg-clip-text text-transparent">
-          освобождению
+          освобождению ума
         </span>
       </h1>
       <p className="text-muted-foreground text-center text-lg max-w-[580px] mx-auto mt-8">
