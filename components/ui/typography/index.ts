@@ -4,4 +4,5 @@ export {
   TypographyH3,
   TypographyH4,
   TypographyP,
+  TypographyList,
 } from './heading-elements';

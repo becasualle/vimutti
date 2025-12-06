@@ -5,6 +5,7 @@ import {
   TypographyH2,
   TypographyH3,
   TypographyH4,
+  TypographyList,
   TypographyP,
 } from '@/components/ui/typography';
 
@@ -14,6 +15,8 @@ const components: MDXComponents = {
   h3: TypographyH3,
   h4: TypographyH4,
   p: TypographyP,
+  ul: TypographyList,
+  ol: (props) => <TypographyList {...props} tag="ol" />,
   a: (props) => (
     <Link
       {...props}
