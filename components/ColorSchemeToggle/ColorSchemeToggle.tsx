@@ -1,15 +1,16 @@
 'use client';
 
-import { Button, Group, useMantineColorScheme } from '@mantine/core';
+import { useTheme } from 'next-themes';
+import { Button } from '@/components/ui/button';
 
 export function ColorSchemeToggle() {
-  const { setColorScheme } = useMantineColorScheme();
+  const { setTheme } = useTheme();
 
   return (
-    <Group justify="center" mt="xl">
-      <Button onClick={() => setColorScheme('light')}>Light</Button>
-      <Button onClick={() => setColorScheme('dark')}>Dark</Button>
-      <Button onClick={() => setColorScheme('auto')}>Auto</Button>
-    </Group>
+    <div className="flex justify-center gap-2 mt-8">
+      <Button onClick={() => setTheme('light')}>Light</Button>
+      <Button onClick={() => setTheme('dark')}>Dark</Button>
+      <Button onClick={() => setTheme('system')}>Auto</Button>
+    </div>
   );
 }

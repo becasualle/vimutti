@@ -1,9 +1,8 @@
-import '@mantine/core/styles.css';
+import './globals.css';
 
 import React from 'react';
 import { Analytics } from '@vercel/analytics/next';
-import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
-import { theme } from '../theme';
+import { ThemeProvider } from 'next-themes';
 
 export const metadata = {
   title: 'Путь к освобождению',
@@ -28,22 +27,18 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: any }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" {...mantineHtmlProps}>
+    <html lang="ru" suppressHydrationWarning>
       <head>
-        <ColorSchemeScript />
         <link rel="shortcut icon" href="/favicon.svg" />
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
-        <MantineProvider theme={theme} defaultColorScheme="dark">
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
           <Analytics />
-        </MantineProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

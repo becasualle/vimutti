@@ -1,5 +1,7 @@
 {
-  "extends": ["stylelint-config-standard-scss"],
+  "extends": [
+    "stylelint-config-standard-scss"
+  ],
   "rules": {
     "custom-property-pattern": null,
     "selector-class-pattern": null,
@@ -16,12 +18,25 @@
     "comment-empty-line-before": null,
     "scss/at-mixin-pattern": null,
     "scss/at-rule-no-unknown": null,
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": [
+          "apply",
+          "layer",
+          "theme",
+          "custom-variant"
+        ]
+      }
+    ],
     "value-keyword-case": null,
     "media-feature-range-notation": null,
     "selector-pseudo-class-no-unknown": [
       true,
       {
-        "ignorePseudoClasses": ["global"]
+        "ignorePseudoClasses": [
+          "global"
+        ]
       }
     ]
   }
