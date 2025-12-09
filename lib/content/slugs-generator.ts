@@ -1,7 +1,7 @@
 import { readdirSync, statSync } from 'fs';
 import path from 'path';
 
-const articlesDirectory = path.join(process.cwd(), 'app/content/articles');
+const articlesDirectory = path.join(process.cwd(), 'content/articles');
 
 export function getAllSlugs() {
   return getFiles(articlesDirectory);
