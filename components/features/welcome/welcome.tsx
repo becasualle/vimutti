@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { TypographyH1 } from '../ui/typography';
+import { TypographyH1 } from '@/components/ui/typography';
 
 export function Welcome() {
   return (
