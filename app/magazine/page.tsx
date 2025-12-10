@@ -35,7 +35,7 @@ async function getArticleCardData(slugPath: string): Promise<ArticleListCard> {
   const footerTags = frontmatter.tags?.map((t) => `#${t}`);
 
   const cardData: ArticleListCard = {
-    slug: slugPath, // Use the full path from directory structure, not frontmatter.slug
+    slug: slugPath,
     title: frontmatter.title,
     description: frontmatter.description,
     action: 'Читать',

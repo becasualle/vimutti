@@ -22,13 +22,11 @@ export function ArticleList({ cards }: { cards: ArticleListCard[] }) {
         <CardHeader>
           <CardTitle>{c.title}</CardTitle>
           <CardDescription>{c.description}</CardDescription>
-          <CardAction>
-            <ButtonLink href={`/magazine/${c.slug}`}>Читать</ButtonLink>
-          </CardAction>
         </CardHeader>
         <CardContent>
           <p>{c.content}</p>
         </CardContent>
+
         <CardFooter>
           {isArray(c.footer) ? (
             <div className="flex flex-wrap gap-2">
@@ -40,6 +38,9 @@ export function ArticleList({ cards }: { cards: ArticleListCard[] }) {
             <span>{c.footer}</span>
           )}
         </CardFooter>
+        <CardAction className="mt-auto pr-6 self-end">
+          <ButtonLink href={`/magazine/${c.slug}`}>Читать</ButtonLink>
+        </CardAction>
       </Card>
     );
   });
