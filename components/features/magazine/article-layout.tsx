@@ -1,8 +1,7 @@
-import { ReactNode } from 'react';
 import { TypographyH1 } from '@/components/ui/typography/heading-elements/typography-h1';
 
 type ArticleLayoutProps = {
-  children: ReactNode;
+  children: React.ReactNode;
   title?: string;
 };
 
