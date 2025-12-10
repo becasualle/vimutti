@@ -1,3 +1,5 @@
+import { isArray } from 'lodash-es';
+import { ButtonLink } from '@/components/ui/button-link';
 import {
   Card,
   CardAction,
@@ -7,45 +9,36 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import type { ArticleListCard } from './types';
 
-export function ArticleList() {
-  const cards = [
-    {
-      title: 'Заголовок статьи 1',
-      description: 'Текстовое описание о чем будет статья',
-      action: 'Читать далее',
-      content: 'Какой-то контент',
-      footer: 'Опциональный футер контент',
-    },
-    {
-      title: 'Заголовок статьи 2',
-      description: 'Текстовое описание о чем будет статья',
-      action: 'Читать далее',
-      content: 'Какой-то контент',
-      footer: 'Опциональный футер контент',
-    },
-    {
-      title: 'Заголовок статьи 3',
-      description: 'Текстовое описание о чем будет статья',
-      action: 'Читать далее',
-      content: 'Какой-то контент',
-      footer: 'Опциональный футер контент',
-    },
-  ];
+export function ArticleList({ cards }: { cards: ArticleListCard[] }) {
+  if (cards.length === 0) {
+    return <div>К сожалению, не удалось найти статьи</div>;
+  }
 
   const cardsTemplate = cards.map((c) => {
     return (
-      <Card key={c.title}>
+      <Card key={c.slug || c.title}>
         <CardHeader>
           <CardTitle>{c.title}</CardTitle>
           <CardDescription>{c.description}</CardDescription>
-          <CardAction>{c.action}</CardAction>
+          <CardAction>
+            <ButtonLink href={`/magazine/${c.slug}`}>Читать</ButtonLink>
+          </CardAction>
         </CardHeader>
         <CardContent>
           <p>{c.content}</p>
         </CardContent>
         <CardFooter>
-          <p>{c.footer}</p>
+          {isArray(c.footer) ? (
+            <div className="flex flex-wrap gap-2">
+              {c.footer.map((tag) => (
+                <span key={tag}>{tag}</span>
+              ))}
+            </div>
+          ) : (
+            <span>{c.footer}</span>
+          )}
         </CardFooter>
       </Card>
     );
