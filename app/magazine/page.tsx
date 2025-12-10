@@ -37,7 +37,7 @@ async function getArticleCardData(slugPath: string): Promise<ArticleListCard> {
   const cardData: ArticleListCard = {
     slug: slugPath,
     title: frontmatter.title,
-    description: frontmatter.description,
+    content: frontmatter.description,
     action: 'Читать',
     footer: footerTags,
   };

@@ -4,7 +4,6 @@ import {
   Card,
   CardAction,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -20,8 +19,7 @@ export function ArticleList({ cards }: { cards: ArticleListCard[] }) {
     return (
       <Card key={c.slug || c.title}>
         <CardHeader>
-          <CardTitle>{c.title}</CardTitle>
-          <CardDescription>{c.description}</CardDescription>
+          <CardTitle className=" text-xl">{c.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <p>{c.content}</p>
@@ -29,7 +27,7 @@ export function ArticleList({ cards }: { cards: ArticleListCard[] }) {
 
         <CardFooter>
           {isArray(c.footer) ? (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1 text-muted-foreground text-sm">
               {c.footer.map((tag) => (
                 <span key={tag}>{tag}</span>
               ))}
