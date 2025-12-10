@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ButtonLink } from '@/components/ui/button-link';
 import { TypographyH1 } from '@/components/ui/typography';
 
 export function Welcome() {
@@ -13,20 +14,28 @@ export function Welcome() {
         </TypographyH1>
         <p className="text-muted-foreground text-center text-lg max-w-[580px] mx-auto mt-8">
           Обретите эмоциональный покой и свободу благодаря проверенным инструментам психологии,
-          философии и буддизма. Начните с{' '}
+          философии и буддизма. Начните с избранных статей:{' '}
           <Link
             href="magazine/buddhism/four-noble-truths"
             className="text-lg text-primary underline-offset-4 hover:underline"
           >
-            четырёх благородных истин{' '}
+            четырёх благородных истин,{' '}
           </Link>
           или{' '}
           <Link
             href="/magazine/stoicism/doc"
             className="text-lg text-primary underline-offset-4 hover:underline"
           >
-            дихотомии контроля.
+            дихотомии контроля,{' '}
           </Link>
+          или ознакомьтесь с полным{' '}
+          <ButtonLink
+            href={'/magazine'}
+            className="text-lg text-primary underline-offset-4 hover:underline px-0"
+          >
+            {' '}
+            списком статей.
+          </ButtonLink>
         </p>
       </div>
     </div>
