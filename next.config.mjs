@@ -1,5 +1,6 @@
 import bundleAnalyzer from '@next/bundle-analyzer';
 import createMDX from '@next/mdx';
+import { remarkMermaid } from '@theguild/remark-mermaid';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
@@ -10,7 +11,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const withMDX = createMDX({
   options: {
-    remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
+    remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter, remarkMermaid],
     rehypePlugins: [],
   },
   extension: /\.(md|mdx)$/,
