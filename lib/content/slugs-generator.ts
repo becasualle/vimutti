@@ -20,7 +20,10 @@ function getFiles(dir: string) {
       slugs.push(...subSlugs);
     } else if (item.endsWith('.mdx')) {
       const relativePath = path.relative(articlesDirectory, fullPath);
-      const slug = relativePath.replace(/\.mdx/, '').split(path.sep);
+      const slug = relativePath
+        .replace(/\.mdx/, '')
+        .split(path.sep)
+        .map((segment) => segment.trim());
       slugs.push(slug);
     }
   }
