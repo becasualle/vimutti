@@ -12,7 +12,9 @@ export default async function Page() {
   let cards: ArticleListCard[] = [];
 
   try {
-    cards = await Promise.all(slugPaths.map((slugPath) => getArticleCardData(slugPath)));
+    cards = (await Promise.all(slugPaths.map((slugPath) => getArticleCardData(slugPath)))).sort(
+      (a, b) => b.date?.localeCompare(a.date)
+    );
   } catch (error) {
     console.log(error);
   }
@@ -40,6 +42,7 @@ async function getArticleCardData(slugPath: string): Promise<ArticleListCard> {
     content: frontmatter.description,
     action: 'Читать',
     footer: footerTags,
+    date: frontmatter.date,
   };
 
   return cardData;
