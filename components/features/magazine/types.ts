@@ -2,7 +2,7 @@ export interface ArticleFrontmatter {
   title: string;
   slug: string;
   description?: string;
-  date?: string;
+  date: string;
   tags?: string[];
 }
 
@@ -13,6 +13,7 @@ export interface ArticleListCard {
   action?: string;
   content?: string;
   footer?: string | string[];
+  date: string;
 }
 
 export interface RemarkMdxParsedData {
