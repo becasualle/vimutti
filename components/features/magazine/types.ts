@@ -4,6 +4,7 @@ export interface ArticleFrontmatter {
   description?: string;
   date: string;
   tags?: string[];
+  category: string[]; // ["psychology", "cbt"]
 }
 
 export interface ArticleListCard {
