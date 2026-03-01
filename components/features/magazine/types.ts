@@ -1,9 +1,9 @@
 export interface ArticleFrontmatter {
   title: string;
   slug: string;
-  description?: string;
+  description: string;
   date: string;
-  tags?: string[];
+  tags: string[];
   category: string[]; // ["psychology", "cbt"]
 }
 
