@@ -1,5 +1,5 @@
-import type { ArticleFrontmatter } from './types';
-import { articleToCard } from '@/lib/content/getAllArticles';
+import type { ArticleFrontmatter } from '@/features/magazine/types';
+import { articleToCard } from '@/features/magazine/lib/get-all-articles';
 import { ArticleList } from './article-list';
 import { ArticleListLayout } from './article-list-layout';
 import { TypographyH1 } from '@/components/ui/typography';

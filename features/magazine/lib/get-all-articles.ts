@@ -3,8 +3,8 @@ import type {
   ArticleFrontmatter,
   ArticleListCard,
   RemarkMdxParsedData,
-} from '@/components/features/magazine/types';
-import { getAllSlugs } from '@/lib/content/slugs-generator';
+} from '@/features/magazine/types';
+import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
 
 async function getAllArticlesUncached(): Promise<ArticleFrontmatter[]> {
   const slugs = getAllSlugs();

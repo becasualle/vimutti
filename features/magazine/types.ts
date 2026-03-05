@@ -1,3 +1,5 @@
+import type { ComponentType } from 'react';
+
 export interface ArticleFrontmatter {
   title: string;
   slug: string;
@@ -18,6 +20,6 @@ export interface ArticleListCard {
 }
 
 export interface RemarkMdxParsedData {
-  default: React.ComponentType;
+  default: ComponentType;
   frontmatter: ArticleFrontmatter;
 }
