@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import type { ArticleListCard } from '@/lib/content/types';
+import type { ArticleListCard } from '@/features/magazine/types';
 
 export function ArticleList({ cards }: { cards: ArticleListCard[] }) {
   if (cards.length === 0) {

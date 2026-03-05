@@ -1,10 +1,13 @@
 import { notFound } from 'next/navigation';
-import ArticleLayout from '@/components/features/magazine/article-layout';
-import type { RemarkMdxParsedData } from '@/lib/content/types';
-import { ArticleListSection } from '@/components/features/magazine/article-list-section';
-import { getCategoryTitle } from '@/lib/content/category-labels';
-import { getArticlesByCategory, getCategoryPaths } from '@/lib/content/getAllArticles';
-import { getAllSlugs } from '@/lib/content/slugs-generator';
+import ArticleLayout from '@/features/magazine/components/article-layout';
+import type { RemarkMdxParsedData } from '@/features/magazine/types';
+import { ArticleListSection } from '@/features/magazine/components/article-list-section';
+import { getCategoryTitle } from '@/features/magazine/lib/category-labels';
+import {
+  getArticlesByCategory,
+  getCategoryPaths,
+} from '@/features/magazine/lib/get-all-articles';
+import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
 
 export default async function Page({ params }: { params: Promise<{ category: string[] }> }) {
   const { category: segments } = await params;

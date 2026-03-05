@@ -1,5 +1,5 @@
 /// <reference types="mdx" />
-import type { ArticleFrontmatter } from '@/lib/content/types';
+import type { ArticleFrontmatter } from '@/features/magazine/types';
 
 declare module '*.mdx' {
   let MDXComponent: (props: any) => JSX.Element;

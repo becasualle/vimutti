@@ -1,4 +1,4 @@
-import { Welcome } from '@/components/features/welcome/welcome';
+import { Welcome } from '@/features/welcome/components/welcome';
 
 export default function HomePage() {
   return (

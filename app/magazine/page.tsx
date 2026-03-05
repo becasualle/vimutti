@@ -1,5 +1,5 @@
-import { ArticleListSection } from '@/components/features/magazine/article-list-section';
-import { getAllArticles } from '@/lib/content/getAllArticles';
+import { ArticleListSection } from '@/features/magazine/components/article-list-section';
+import { getAllArticles } from '@/features/magazine/lib/get-all-articles';
 
 export default async function Page() {
   const articles = await getAllArticles();
