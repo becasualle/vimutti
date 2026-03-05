@@ -18,10 +18,7 @@ const withMDX = createMDX({
 });
 
 const nextConfig = {
-  reactStrictMode: false,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
 };
 
