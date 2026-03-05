@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import ArticleLayout from '@/components/features/magazine/article-layout';
-import type { RemarkMdxParsedData } from '@/components/features/magazine/types';
+import type { RemarkMdxParsedData } from '@/lib/content/types';
 import { ArticleListSection } from '@/components/features/magazine/article-list-section';
 import { getCategoryTitle } from '@/lib/content/category-labels';
 import { getArticlesByCategory, getCategoryPaths } from '@/lib/content/getAllArticles';

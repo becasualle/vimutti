@@ -1,4 +1,4 @@
-import type { ArticleFrontmatter } from './types';
+import type { ArticleFrontmatter } from '@/lib/content/types';
 import { articleToCard } from '@/lib/content/getAllArticles';
 import { ArticleList } from './article-list';
 import { ArticleListLayout } from './article-list-layout';

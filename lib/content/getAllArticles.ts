@@ -1,10 +1,6 @@
 import { cache } from 'react';
-import type {
-  ArticleFrontmatter,
-  ArticleListCard,
-  RemarkMdxParsedData,
-} from '@/components/features/magazine/types';
 import { getAllSlugs } from '@/lib/content/slugs-generator';
+import type { ArticleFrontmatter, ArticleListCard, RemarkMdxParsedData } from '@/lib/content/types';
 
 async function getAllArticlesUncached(): Promise<ArticleFrontmatter[]> {
   const slugs = getAllSlugs();
@@ -37,9 +33,7 @@ export const getAllArticles = cache(getAllArticlesUncached);
  * getArticlesByCategory(["psychology"]) — все статьи в psychology и в подкатегориях (cbt, act, …)
  * getArticlesByCategory(["psychology", "cbt"]) — только статьи в psychology/cbt
  */
-export async function getArticlesByCategory(
-  categoryPath: string[]
-): Promise<ArticleFrontmatter[]> {
+export async function getArticlesByCategory(categoryPath: string[]): Promise<ArticleFrontmatter[]> {
   const articles = await getAllArticles();
   return articles.filter(
     (a) =>
