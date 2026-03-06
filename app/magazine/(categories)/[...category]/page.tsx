@@ -1,3 +1,8 @@
+/**
+ * Magazine catch-all route: `/magazine/[...category]`.
+ * Serves article pages (single MDX) and category listing pages (articles in a category).
+ */
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ArticleLayout from '@/features/magazine/components/article-layout';
 import type { RemarkMdxParsedData } from '@/features/magazine/types';
@@ -9,14 +14,99 @@ import {
 } from '@/features/magazine/lib/get-all-articles';
 import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
 
+/** Site name used in OpenGraph and metadata. */
+const SITE_NAME = 'Путь к освобождению';
+/** Canonical base URL for absolute links in metadata. */
+const BASE_URL = 'https://www.vimutti.ru';
+
+/**
+ * Resolves catch-all route segments into a path string and whether it points to an article.
+ * @param segments - URL path segments from the `[...category]` param (e.g. `['psychology', 'cbt']`).
+ * @returns Object with `pathStr` (e.g. `'psychology/cbt'`) and `isArticle` (true if that path is an article slug).
+ */
+function resolveSegments(segments: string[]) {
+  const pathStr = segments.join('/');
+  const articleSlugs = new Set(getAllSlugs().map((p) => p.join('/')));
+  return { pathStr, isArticle: articleSlugs.has(pathStr) };
+}
+
+/**
+ * Generates per-page metadata for SEO (title, description, OpenGraph, Twitter).
+ * For article paths, uses frontmatter; for category paths, uses the category title.
+ * @param props - Next.js page props with resolved `params`.
+ * @returns Metadata for the current route, or empty object when segments are empty.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ category: string[] }>;
+}): Promise<Metadata> {
+  const { category: segments } = await params;
+  if (segments.length === 0) return {};
+
+  const { pathStr, isArticle } = resolveSegments(segments);
+
+  if (isArticle) {
+    const { frontmatter } = (await import(
+      `@/content/articles/${pathStr}.mdx`
+    )) as RemarkMdxParsedData;
+
+    const title = frontmatter.title || pathStr;
+    const description = frontmatter.description || '';
+    const url = `${BASE_URL}/magazine/${pathStr}`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        url,
+        siteName: SITE_NAME,
+        type: 'article',
+        locale: 'ru_RU',
+        publishedTime: frontmatter.date,
+        tags: frontmatter.tags,
+      },
+      twitter: {
+        card: 'summary',
+        title,
+        description,
+      },
+    };
+  }
+
+  const categoryTitle = getCategoryTitle(segments);
+  const description = `Статьи по теме «${categoryTitle}»`;
+  const url = `${BASE_URL}/magazine/${pathStr}`;
+
+  return {
+    title: categoryTitle,
+    description,
+    openGraph: {
+      title: categoryTitle,
+      description,
+      url,
+      siteName: SITE_NAME,
+      type: 'website',
+      locale: 'ru_RU',
+    },
+  };
+}
+
+/**
+ * Catch-all magazine page: renders either a single article or a category listing.
+ * - Article: when `category` matches an article slug (e.g. `psychology/cbt/some-article`), loads the MDX and wraps it in ArticleLayout.
+ * - Category: when `category` is a category path, shows ArticleListSection with articles in that category.
+ * @param props - Next.js page props with `params.category` as the path segments.
+ */
 export default async function Page({ params }: { params: Promise<{ category: string[] }> }) {
   const { category: segments } = await params;
   if (segments.length === 0) notFound();
 
-  const pathStr = segments.join('/');
-  const articleSlugs = new Set(getAllSlugs().map((p) => p.join('/')));
+  const { pathStr, isArticle } = resolveSegments(segments);
 
-  if (articleSlugs.has(pathStr)) {
+  if (isArticle) {
     const { default: Post, frontmatter } = (await import(
       `@/content/articles/${pathStr}.mdx`
     )) as RemarkMdxParsedData;
@@ -33,6 +123,10 @@ export default async function Page({ params }: { params: Promise<{ category: str
   return <ArticleListSection articles={articles} title={getCategoryTitle(segments)} />;
 }
 
+/**
+ * Returns all static paths for this route: every article slug plus every category path that is not an article.
+ * Used by Next.js for static generation at build time.
+ */
 export async function generateStaticParams() {
   const [articleSlugs, categoryPaths] = await Promise.all([
     Promise.resolve(getAllSlugs()),
@@ -46,4 +140,5 @@ export async function generateStaticParams() {
   return params;
 }
 
+/** When true, allows dynamic paths not in generateStaticParams to be generated on demand. */
 export const dynamicParams = true;
