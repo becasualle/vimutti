@@ -2,10 +2,15 @@
 
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
+import { IconCircleHalf2 } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 
 export function MagazineHeader() {
-  const { setTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
+
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+  };
 
   return (
     <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur">
@@ -27,19 +32,11 @@ export function MagazineHeader() {
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
-            size="sm"
-            onClick={() => setTheme('light')}
-            aria-label="Светлая тема"
+            size="icon"
+            onClick={toggleTheme}
+            aria-label={resolvedTheme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
           >
-            Светлая
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setTheme('dark')}
-            aria-label="Тёмная тема"
-          >
-            Тёмная
+            <IconCircleHalf2 className="size-4" />
           </Button>
         </div>
       </div>
