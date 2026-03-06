@@ -43,38 +43,39 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --muted-foreground: oklch(0.439 0.03 256.788);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.147 0.004 49.25);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.147 0.004 49.25);
-  --primary: oklch(0.216 0.006 56.043);
-  --primary-foreground: oklch(0.985 0.001 106.423);
-  --secondary: oklch(0.97 0.001 106.424);
-  --secondary-foreground: oklch(0.216 0.006 56.043);
-  --muted: oklch(0.97 0.001 106.424);
-  --muted-foreground: oklch(0.553 0.013 58.071);
-  --accent: oklch(0.97 0.001 106.424);
-  --accent-foreground: oklch(0.216 0.006 56.043);
+  /* Happy Hues palette 17 - https://www.happyhues.co/palettes/17 */
+  --background: #fef6e4;
+  --foreground: #001858;
+  --muted-foreground: #172c66;
+  --card: #fef6e4;
+  --card-foreground: #001858;
+  --popover: #fef6e4;
+  --popover-foreground: #001858;
+  --primary: #001858;
+  --primary-foreground: #fef6e4;
+  --secondary: #f3d2c1;
+  --secondary-foreground: #001858;
+  --muted: #f3d2c1;
+  --muted-foreground: #172c66;
+  --accent: #f582ae;
+  --accent-foreground: #001858;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.923 0.003 48.717);
-  --input: oklch(0.923 0.003 48.717);
-  --ring: oklch(0.709 0.01 56.259);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0.001 106.423);
-  --sidebar-foreground: oklch(0.147 0.004 49.25);
-  --sidebar-primary: oklch(0.216 0.006 56.043);
-  --sidebar-primary-foreground: oklch(0.985 0.001 106.423);
-  --sidebar-accent: oklch(0.97 0.001 106.424);
-  --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
-  --sidebar-border: oklch(0.923 0.003 48.717);
-  --sidebar-ring: oklch(0.709 0.01 56.259);
+  --border: #f3d2c1;
+  --input: #f3d2c1;
+  --ring: #8bd3dd;
+  --chart-1: #f582ae;
+  --chart-2: #8bd3dd;
+  --chart-3: #172c66;
+  --chart-4: #f3d2c1;
+  --chart-5: #001858;
+  --sidebar: #fef6e4;
+  --sidebar-foreground: #001858;
+  --sidebar-primary: #001858;
+  --sidebar-primary-foreground: #fef6e4;
+  --sidebar-accent: #f3d2c1;
+  --sidebar-accent-foreground: #001858;
+  --sidebar-border: #f3d2c1;
+  --sidebar-ring: #8bd3dd;
 }
 
 .dark {
