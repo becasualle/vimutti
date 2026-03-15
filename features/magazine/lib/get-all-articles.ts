@@ -72,3 +72,39 @@ export function articleToCard(a: ArticleFrontmatter): ArticleListCard {
     date: a.date,
   };
 }
+
+/** Related article for internal linking (SEO and UX). */
+export type RelatedArticle = { slug: string; title: string };
+
+/**
+ * Returns articles related by shared category or overlapping tags, excluding the current article.
+ * Sorted by relevance (same category first, then by tag overlap), then by date descending.
+ */
+export async function getRelatedArticles(
+  currentSlug: string,
+  category: string[],
+  tags: string[],
+  limit = 5
+): Promise<RelatedArticle[]> {
+  const articles = await getAllArticles();
+  const tagSet = new Set(tags);
+
+  const scored = articles
+    .filter((a) => a.slug !== currentSlug)
+    .map((a) => {
+      const categoryMatch =
+        category.length > 0 && a.category.length >= category.length
+          ? category.every((seg, i) => a.category[i] === seg)
+            ? 2
+            : a.category.some((seg) => category.includes(seg))
+              ? 1
+              : 0
+          : 0;
+      const tagOverlap = a.tags?.filter((t) => tagSet.has(t)).length ?? 0;
+      return { article: a, score: categoryMatch * 10 + tagOverlap };
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score || (b.article.date ?? '').localeCompare(a.article.date ?? ''));
+
+  return scored.slice(0, limit).map(({ article }) => ({ slug: article.slug, title: article.title }));
+}

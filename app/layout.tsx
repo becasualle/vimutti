@@ -5,6 +5,8 @@ import { Analytics } from '@vercel/analytics/next';
 import { ThemeProvider } from 'next-themes';
 
 export const metadata = {
+  metadataBase: new URL('https://www.vimutti.ru'),
+  alternates: { canonical: '/' },
   title: 'Путь к освобождению',
   description:
     'Обретите эмоциональный покой и свободу благодаря проверенным инструментам психологии, философии и буддизма.',
