@@ -11,6 +11,7 @@ import { getCategoryTitle } from '@/features/magazine/lib/category-labels';
 import {
   getArticlesByCategory,
   getCategoryPaths,
+  getRelatedArticles,
 } from '@/features/magazine/lib/get-all-articles';
 import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
 
@@ -58,6 +59,7 @@ export async function generateMetadata({
     return {
       title,
       description,
+      alternates: { canonical: `/magazine/${pathStr}` },
       openGraph: {
         title,
         description,
@@ -83,6 +85,7 @@ export async function generateMetadata({
   return {
     title: categoryTitle,
     description,
+    alternates: { canonical: `/magazine/${pathStr}` },
     openGraph: {
       title: categoryTitle,
       description,
@@ -110,8 +113,20 @@ export default async function Page({ params }: { params: Promise<{ category: str
     const { default: Post, frontmatter } = (await import(
       `@/content/articles/${pathStr}.mdx`
     )) as RemarkMdxParsedData;
+    const relatedArticles = await getRelatedArticles(
+      pathStr,
+      frontmatter?.category ?? [],
+      frontmatter?.tags ?? [],
+      5
+    );
     return (
-      <ArticleLayout title={frontmatter?.title ?? ''}>
+      <ArticleLayout
+        title={frontmatter?.title ?? ''}
+        description={frontmatter?.description}
+        date={frontmatter?.date}
+        slugPath={pathStr}
+        relatedArticles={relatedArticles}
+      >
         <Post />
       </ArticleLayout>
     );
