@@ -1,6 +1,7 @@
 /**
- * Magazine catch-all route: `/magazine/[...category]`.
- * Serves article pages (single MDX) and category listing pages (articles in a category).
+ * Catch-all маршрут журнала: `/magazine/[...category]`.
+ * Отдаёт либо одну статью (MDX), либо список статей по префиксу категории.
+ * Перед контентом рендерится `MagazineBreadcrumbs` с пропсами из `segments` и frontmatter.
  */
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -122,6 +123,7 @@ export default async function Page({ params }: { params: Promise<{ category: str
     );
     return (
       <>
+        {/* Родительские сегменты URL без slug статьи; заголовок — из frontmatter */}
         <MagazineBreadcrumbs
           categorySegments={segments.slice(0, -1)}
           currentLabel={frontmatter?.title ?? ''}
@@ -146,6 +148,7 @@ export default async function Page({ params }: { params: Promise<{ category: str
   const title = getCategoryTitle(segments);
   return (
     <>
+      {/* Полный путь категории; текущий лист — только в currentLabel (не дублируется как ссылка) */}
       <MagazineBreadcrumbs
         categorySegments={segments}
         currentLabel={title}

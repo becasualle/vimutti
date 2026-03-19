@@ -1,13 +1,19 @@
+/**
+ * Примитивы навигации «хлебные крошки» (shadcn/ui): семантическая разметка `nav` / `ol` / `li`,
+ * доступность (`aria-current`, разделители с `aria-hidden`).
+ */
 import * as React from "react"
 import { ChevronRight, MoreHorizontal } from "lucide-react"
 import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/** Корневой контейнер крошек (`<nav aria-label="breadcrumb">`). */
 function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
   return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />
 }
 
+/** Список элементов крошек (`<ol>`). */
 function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
   return (
     <ol
@@ -21,6 +27,7 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
   )
 }
 
+/** Один пункт списка. */
 function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
   return (
     <li
@@ -31,6 +38,9 @@ function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
   )
 }
 
+/**
+ * Ссылка в крошке; с `asChild` оборачивает дочерний элемент (например `next/link`).
+ */
 function BreadcrumbLink({
   asChild,
   className,
@@ -49,6 +59,7 @@ function BreadcrumbLink({
   )
 }
 
+/** Текущая страница (не ссылка, `aria-current="page"`). */
 function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
@@ -62,6 +73,7 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
   )
 }
 
+/** Разделитель между пунктами (по умолчанию иконка «шеврон»). */
 function BreadcrumbSeparator({
   children,
   className,
@@ -80,6 +92,7 @@ function BreadcrumbSeparator({
   )
 }
 
+/** Сжатие длинной цепочки (многоточие). */
 function BreadcrumbEllipsis({
   className,
   ...props

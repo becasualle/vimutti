@@ -33,9 +33,15 @@ async function getAllArticlesUncached(): Promise<ArticleFrontmatter[]> {
 export const getAllArticles = cache(getAllArticlesUncached);
 
 /**
- * Статьи, у которых category начинается с categoryPath (префикс).
- * getArticlesByCategory(["psychology"]) — все статьи в psychology и в подкатегориях (cbt, act, …)
- * getArticlesByCategory(["psychology", "cbt"]) — только статьи в psychology/cbt
+ * Статьи, у которых `frontmatter.category` начинается с `categoryPath` (префикс).
+ *
+ * @example
+ * getArticlesByCategory(["psychology"]) — все статьи в psychology и в подкатегориях (cbt, act, …).
+ * @example
+ * getArticlesByCategory(["psychology", "cbt"]) — только статьи, чья категория ровно `psychology/cbt/...`.
+ *
+ * @param categoryPath — сегменты пути категории в том же порядке, что в URL после `/magazine`.
+ * @returns Массив frontmatter всех подходящих статей.
  */
 export async function getArticlesByCategory(
   categoryPath: string[]
@@ -77,8 +83,14 @@ export function articleToCard(a: ArticleFrontmatter): ArticleListCard {
 export type RelatedArticle = { slug: string; title: string };
 
 /**
- * Returns articles related by shared category or overlapping tags, excluding the current article.
- * Sorted by relevance (same category first, then by tag overlap), then by date descending.
+ * Похожие статьи по общей категории (полное совпадение префикса или пересечение сегментов) и пересечению тегов;
+ * текущая статья исключается. Сортировка: сначала релевантность (категория, затем число общих тегов), затем дата по убыванию.
+ *
+ * @param currentSlug — slug статьи без префикса `/magazine`, например `psychology/cbt/article`.
+ * @param category — массив сегментов категории из frontmatter текущей статьи.
+ * @param tags — теги текущей статьи.
+ * @param limit — максимум записей в ответе (по умолчанию 5).
+ * @returns `{ slug, title }` для внутренних ссылок и SEO.
  */
 export async function getRelatedArticles(
   currentSlug: string,

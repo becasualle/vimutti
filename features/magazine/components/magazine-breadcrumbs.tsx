@@ -1,3 +1,12 @@
+/**
+ * Хлебные крошки раздела «Статьи»: рендерятся на уровне страниц (не layout),
+ * чтобы использовать уже известные на сервере сегменты URL и заголовок без клиентского `usePathname`.
+ *
+ * Режимы:
+ * - Индекс `/magazine`: `categorySegments=[]`, `articleMode=false`, `currentLabel` — например «Статьи».
+ * - Список по категории: `categorySegments` = полный путь категории, `articleMode=false` — последний сегмент только в `currentLabel`.
+ * - Статья: `categorySegments` = родительские папки (без slug статьи), `articleMode=true`, `currentLabel` = `title` из frontmatter.
+ */
 import * as React from 'react';
 import Link from 'next/link';
 import {
@@ -11,14 +20,24 @@ import {
 import { getCategorySegmentLabel } from '@/features/magazine/lib/category-labels';
 
 type MagazineBreadcrumbsProps = {
-  /** Category path from URL or frontmatter (`[]` on `/magazine`). */
+  /**
+   * Сегменты пути категории из URL (без `/magazine`).
+   * Для статьи — все сегменты кроме последнего (slug файла); на `/magazine` — `[]`.
+   */
   categorySegments: string[];
-  /** Current page label (list heading or article title). */
+  /** Текущая страница: заголовок списка, название категории-листа или заголовок статьи. */
   currentLabel: string;
-  /** When true, every segment is a link and `currentLabel` is the article title. */
+  /**
+   * `true` — статья: каждый элемент `categorySegments` — ссылка, затем нессылочный `currentLabel` (заголовок статьи).
+   * `false` — список/индекс: ссылки на префиксы пути, `currentLabel` — текущий уровень (лист или «Статьи»).
+   */
   articleMode: boolean;
 };
 
+/**
+ * Строка крошек: Главная → Статьи → … → текущая страница.
+ * Подписи сегментов — через `getCategorySegmentLabel` из `category-labels`.
+ */
 export function MagazineBreadcrumbs({
   categorySegments,
   currentLabel,

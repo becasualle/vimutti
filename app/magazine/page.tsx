@@ -1,3 +1,6 @@
+/**
+ * Главная страница журнала: `/magazine` — полный список статей и крошки «Главная → Статьи».
+ */
 import type { Metadata } from 'next';
 import { ArticleListSection } from '@/features/magazine/components/article-list-section';
 import { MagazineBreadcrumbs } from '@/features/magazine/components/magazine-breadcrumbs';

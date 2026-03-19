@@ -1,3 +1,7 @@
+/**
+ * Вёрстка страницы одной статьи: заголовок, дата, JSON-LD Article, блок «Похожие статьи».
+ * Хлебные крошки задаются снаружи (страница catch-all), не внутри этого компонента.
+ */
 import Link from 'next/link';
 import { TypographyH1 } from '@/components/ui/typography/heading-elements/typography-h1';
 import type { RelatedArticle } from '@/features/magazine/lib/get-all-articles';
@@ -10,9 +14,12 @@ type ArticleLayoutProps = {
   title?: string;
   description?: string;
   date?: string;
-  /** Article path segment (e.g. 'psychology/cbt/article-slug') for canonical URL and JSON-LD. */
+  /**
+   * Путь статьи относительно `/magazine` (как в файловой системе `content/articles`), например `psychology/cbt/slug`.
+   * Нужен для канонического URL и разметки JSON-LD.
+   */
   slugPath?: string;
-  /** Related articles for internal linking (SEO). */
+  /** Похожие статьи для внутренней перелинковки и SEO. */
   relatedArticles?: RelatedArticle[];
 };
 
@@ -56,6 +63,14 @@ function ArticleJsonLd({
   );
 }
 
+/**
+ * @param props.children — тело статьи (MDX).
+ * @param props.title — заголовок H1 и schema.org `headline`.
+ * @param props.description — описание для meta / JSON-LD.
+ * @param props.date — дата публикации (ISO) для `<time>` и JSON-LD.
+ * @param props.slugPath — путь статьи под `/magazine` для канонического URL и JSON-LD.
+ * @param props.relatedArticles — похожие статьи для блока внизу страницы.
+ */
 export default function ArticleLayout({
   children,
   title,
