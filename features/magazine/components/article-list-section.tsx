@@ -1,11 +1,17 @@
-import type { ArticleFrontmatter } from '@/features/magazine/types';
+/**
+ * Блок списка статей: заголовок страницы и сетка карточек (сортировка по дате убыв.).
+ * Используется на `/magazine` и на страницах категорий.
+ */
+import { TypographyH1 } from '@/components/ui/typography';
 import { articleToCard } from '@/features/magazine/lib/get-all-articles';
+import type { ArticleFrontmatter } from '@/features/magazine/types';
 import { ArticleList } from './article-list';
 import { ArticleListLayout } from './article-list-layout';
-import { TypographyH1 } from '@/components/ui/typography';
 
 type ArticleListSectionProps = {
+  /** Статьи для отображения (уже отфильтрованы вызывающим кодом). */
   articles: ArticleFrontmatter[];
+  /** Заголовок над списком (совпадает с последней крошкой на странице категории). */
   title: string;
 };
 

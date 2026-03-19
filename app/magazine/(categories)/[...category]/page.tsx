@@ -1,12 +1,13 @@
 /**
- * Magazine catch-all route: `/magazine/[...category]`.
- * Serves article pages (single MDX) and category listing pages (articles in a category).
+ * Catch-all маршрут журнала: `/magazine/[...category]`.
+ * Отдаёт либо одну статью (MDX), либо список статей по префиксу категории.
+ * Перед контентом рендерится `MagazineBreadcrumbs` с пропсами из `segments` и frontmatter.
  */
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ArticleLayout from '@/features/magazine/components/article-layout';
-import type { RemarkMdxParsedData } from '@/features/magazine/types';
 import { ArticleListSection } from '@/features/magazine/components/article-list-section';
+import { MagazineBreadcrumbs } from '@/features/magazine/components/magazine-breadcrumbs';
 import { getCategoryTitle } from '@/features/magazine/lib/category-labels';
 import {
   getArticlesByCategory,
@@ -14,6 +15,7 @@ import {
   getRelatedArticles,
 } from '@/features/magazine/lib/get-all-articles';
 import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
+import type { RemarkMdxParsedData } from '@/features/magazine/types';
 
 /** Site name used in OpenGraph and metadata. */
 const SITE_NAME = 'Путь к освобождению';
@@ -120,22 +122,41 @@ export default async function Page({ params }: { params: Promise<{ category: str
       5
     );
     return (
-      <ArticleLayout
-        title={frontmatter?.title ?? ''}
-        description={frontmatter?.description}
-        date={frontmatter?.date}
-        slugPath={pathStr}
-        relatedArticles={relatedArticles}
-      >
-        <Post />
-      </ArticleLayout>
+      <>
+        {/* Родительские сегменты URL без slug статьи; заголовок — из frontmatter */}
+        <MagazineBreadcrumbs
+          categorySegments={segments.slice(0, -1)}
+          currentLabel={frontmatter?.title ?? ''}
+          articleMode
+        />
+        <ArticleLayout
+          title={frontmatter?.title ?? ''}
+          description={frontmatter?.description}
+          date={frontmatter?.date}
+          slugPath={pathStr}
+          relatedArticles={relatedArticles}
+        >
+          <Post />
+        </ArticleLayout>
+      </>
     );
   }
 
   const articles = await getArticlesByCategory(segments);
   if (articles.length === 0) notFound();
 
-  return <ArticleListSection articles={articles} title={getCategoryTitle(segments)} />;
+  const title = getCategoryTitle(segments);
+  return (
+    <>
+      {/* Полный путь категории; текущий лист — только в currentLabel (не дублируется как ссылка) */}
+      <MagazineBreadcrumbs
+        categorySegments={segments}
+        currentLabel={title}
+        articleMode={false}
+      />
+      <ArticleListSection articles={articles} title={title} />
+    </>
+  );
 }
 
 /**

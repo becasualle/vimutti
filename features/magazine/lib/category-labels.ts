@@ -1,3 +1,7 @@
+/**
+ * Человекочитаемые подписи для slug’ов категорий в URL и в хлебных крошках.
+ * Неизвестные slug’и превращаются в Title Case по дефисам.
+ */
 const LABELS: Record<string, string> = {
   buddhism: 'Буддизм',
   stoicism: 'Стоицизм',
@@ -31,6 +35,19 @@ function slugToLabel(slug: string): string {
   );
 }
 
+/**
+ * Подпись для одного сегмента URL (папка в `content/articles/...`).
+ * @param slug — сегмент пути, например `psychology`, `basic-methods-of-psychotherapy`.
+ */
+export function getCategorySegmentLabel(slug: string): string {
+  return slugToLabel(slug);
+}
+
+/**
+ * Заголовок текущего уровня категории — по последнему сегменту пути.
+ * @param categoryPath — сегменты после `/magazine`, например `["psychology","cbt"]` → подпись для `cbt`.
+ * @returns Пустой путь → `'Категория'` (запасной вариант).
+ */
 export function getCategoryTitle(categoryPath: string[]): string {
   if (categoryPath.length === 0) return 'Категория';
   return slugToLabel(categoryPath[categoryPath.length - 1]);
