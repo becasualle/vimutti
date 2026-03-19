@@ -1,8 +1,8 @@
-import type { ArticleFrontmatter } from '@/features/magazine/types';
+import { TypographyH1 } from '@/components/ui/typography';
 import { articleToCard } from '@/features/magazine/lib/get-all-articles';
+import type { ArticleFrontmatter } from '@/features/magazine/types';
 import { ArticleList } from './article-list';
 import { ArticleListLayout } from './article-list-layout';
-import { TypographyH1 } from '@/components/ui/typography';
 
 type ArticleListSectionProps = {
   articles: ArticleFrontmatter[];

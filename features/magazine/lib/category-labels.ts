@@ -31,6 +31,11 @@ function slugToLabel(slug: string): string {
   );
 }
 
+/** Human-readable label for a single category URL segment (folder slug). */
+export function getCategorySegmentLabel(slug: string): string {
+  return slugToLabel(slug);
+}
+
 export function getCategoryTitle(categoryPath: string[]): string {
   if (categoryPath.length === 0) return 'Категория';
   return slugToLabel(categoryPath[categoryPath.length - 1]);

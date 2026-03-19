@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ArticleListSection } from '@/features/magazine/components/article-list-section';
+import { MagazineBreadcrumbs } from '@/features/magazine/components/magazine-breadcrumbs';
 import { getAllArticles } from '@/features/magazine/lib/get-all-articles';
 
 export const metadata: Metadata = {
@@ -11,5 +12,14 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const articles = await getAllArticles();
-  return <ArticleListSection articles={articles} title="Список статей" />;
+  return (
+    <>
+      <MagazineBreadcrumbs
+        categorySegments={[]}
+        currentLabel="Статьи"
+        articleMode={false}
+      />
+      <ArticleListSection articles={articles} title="Список статей" />
+    </>
+  );
 }
