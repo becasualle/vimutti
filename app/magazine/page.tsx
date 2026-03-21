@@ -1,10 +1,9 @@
 /**
- * Главная страница журнала: `/magazine` — полный список статей и крошки «Главная → Статьи».
+ * Главная страница журнала: `/magazine` — витрина категорий и направлений.
  */
 import type { Metadata } from 'next';
-import { ArticleListSection } from '@/features/magazine/components/article-list-section';
 import { MagazineBreadcrumbs } from '@/features/magazine/components/magazine-breadcrumbs';
-import { getAllArticles } from '@/features/magazine/lib/get-all-articles';
+import { MagazineShowcase } from '@/features/magazine/components/magazine-showcase';
 
 export const metadata: Metadata = {
   title: 'Статьи | Путь к освобождению',
@@ -13,8 +12,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/magazine' },
 };
 
-export default async function Page() {
-  const articles = await getAllArticles();
+export default function Page() {
   return (
     <>
       <MagazineBreadcrumbs
@@ -22,7 +20,7 @@ export default async function Page() {
         currentLabel="Статьи"
         articleMode={false}
       />
-      <ArticleListSection articles={articles} title="Список статей" />
+      <MagazineShowcase />
     </>
   );
 }

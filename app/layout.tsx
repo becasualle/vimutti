@@ -4,6 +4,9 @@ import React from 'react';
 import { Analytics } from '@vercel/analytics/next';
 import { ThemeProvider } from 'next-themes';
 
+import { MagazineHeader } from '@/features/magazine/components/magazine-header';
+import { getCategoryTree } from '@/features/magazine/lib/get-category-tree';
+
 export const metadata = {
   metadataBase: new URL('https://www.vimutti.ru'),
   alternates: { canonical: '/' },
@@ -29,7 +32,9 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const categoryTree = await getCategoryTree();
+
   return (
     <html lang="ru" suppressHydrationWarning>
       <head>
@@ -38,7 +43,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <MagazineHeader categoryTree={categoryTree} />
+          <main>{children}</main>
           <Analytics />
         </ThemeProvider>
       </body>

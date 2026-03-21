@@ -7,13 +7,16 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ArticleLayout from '@/features/magazine/components/article-layout';
 import { ArticleListSection } from '@/features/magazine/components/article-list-section';
+import { DirectionTiles } from '@/features/magazine/components/direction-tiles';
 import { MagazineBreadcrumbs } from '@/features/magazine/components/magazine-breadcrumbs';
+import { TypographyH1 } from '@/components/ui/typography';
 import { getCategoryTitle } from '@/features/magazine/lib/category-labels';
 import {
   getArticlesByCategory,
   getCategoryPaths,
   getRelatedArticles,
 } from '@/features/magazine/lib/get-all-articles';
+import { getSubDirectionsForPath } from '@/features/magazine/lib/get-category-tree';
 import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
 import type { RemarkMdxParsedData } from '@/features/magazine/types';
 
@@ -105,9 +108,18 @@ export async function generateMetadata({
  * - Category: when `category` is a category path, shows ArticleListSection with articles in that category.
  * @param props - Next.js page props with `params.category` as the path segments.
  */
-export default async function Page({ params }: { params: Promise<{ category: string[] }> }) {
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ category: string[] }>;
+  searchParams: Promise<{ full?: string }>;
+}) {
   const { category: segments } = await params;
   if (segments.length === 0) notFound();
+
+  const { full } = await searchParams;
+  const showFull = full === '1';
 
   const { pathStr, isArticle } = resolveSegments(segments);
 
@@ -146,9 +158,35 @@ export default async function Page({ params }: { params: Promise<{ category: str
   if (articles.length === 0) notFound();
 
   const title = getCategoryTitle(segments);
+  const subDirections = await getSubDirectionsForPath(segments);
+  const hasChildDirections = subDirections.length > 0;
+
+  if (hasChildDirections) {
+    return (
+      <>
+        <MagazineBreadcrumbs
+          categorySegments={segments}
+          currentLabel={title}
+          articleMode={false}
+        />
+        <div className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
+          <TypographyH1 className="mb-8 text-center">{title}</TypographyH1>
+          <DirectionTiles directions={subDirections} />
+          <ArticleListSection
+            articles={articles}
+            title={showFull ? 'Все статьи' : 'Последние статьи'}
+            titleAs="h2"
+            limit={showFull ? undefined : 6}
+            showAllHref={!showFull && articles.length > 6 ? `/magazine/${pathStr}?full=1` : undefined}
+            className="max-w-none py-0 px-0 sm:px-0 lg:px-0"
+          />
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
-      {/* Полный путь категории; текущий лист — только в currentLabel (не дублируется как ссылка) */}
       <MagazineBreadcrumbs
         categorySegments={segments}
         currentLabel={title}
