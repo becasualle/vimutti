@@ -1,10 +1,10 @@
 import { cache } from 'react';
+import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
 import type {
   ArticleFrontmatter,
   ArticleListCard,
   RemarkMdxParsedData,
 } from '@/features/magazine/types';
-import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
 
 async function getAllArticlesUncached(): Promise<ArticleFrontmatter[]> {
   const slugs = getAllSlugs();
@@ -43,9 +43,7 @@ export const getAllArticles = cache(getAllArticlesUncached);
  * @param categoryPath — сегменты пути категории в том же порядке, что в URL после `/magazine`.
  * @returns Массив frontmatter всех подходящих статей.
  */
-export async function getArticlesByCategory(
-  categoryPath: string[]
-): Promise<ArticleFrontmatter[]> {
+export async function getArticlesByCategory(categoryPath: string[]): Promise<ArticleFrontmatter[]> {
   const articles = await getAllArticles();
   return articles.filter(
     (a) =>
@@ -116,7 +114,11 @@ export async function getRelatedArticles(
       return { article: a, score: categoryMatch * 10 + tagOverlap };
     })
     .filter(({ score }) => score > 0)
-    .sort((a, b) => b.score - a.score || (b.article.date ?? '').localeCompare(a.article.date ?? ''));
+    .sort(
+      (a, b) => b.score - a.score || (b.article.date ?? '').localeCompare(a.article.date ?? '')
+    );
 
-  return scored.slice(0, limit).map(({ article }) => ({ slug: article.slug, title: article.title }));
+  return scored
+    .slice(0, limit)
+    .map(({ article }) => ({ slug: article.slug, title: article.title }));
 }
