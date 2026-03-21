@@ -19,9 +19,8 @@ import {
 import { getSubDirectionsForPath } from '@/features/magazine/lib/get-category-tree';
 import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
 import type { RemarkMdxParsedData } from '@/features/magazine/types';
+import { SITE_NAME } from '@/lib/site';
 
-/** Site name used in OpenGraph and metadata. */
-const SITE_NAME = 'Путь к освобождению';
 /** Canonical base URL for absolute links in metadata. */
 const BASE_URL = 'https://www.vimutti.ru';
 
