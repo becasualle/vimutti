@@ -4,6 +4,7 @@
  */
 const LABELS: Record<string, string> = {
   buddhism: 'Буддизм',
+  philosophy: 'Философия',
   stoicism: 'Стоицизм',
   psychology: 'Психология',
   cbt: 'Когнитивно-поведенческая терапия',
@@ -22,6 +23,7 @@ const LABELS: Record<string, string> = {
   'psihologiya-lichnosti': 'Психология личности',
   'osnovy-raboty-psihologa-s-posledstviyami-travmaticheskih-sobytij':
     'Работа с последствиями травмы и гореванием',
+  'psihoterapiya-zavisimostej': 'Психотерапия зависимостей',
   techniques: 'Техники',
 };
 

@@ -16,14 +16,14 @@ export function Welcome() {
           Обретите эмоциональный покой и свободу благодаря проверенным инструментам психологии,
           философии и буддизма. Начните с избранных статей:{' '}
           <Link
-            href="magazine/buddhism/four-noble-truths"
+            href="/magazine/philosophy/buddhism/four-noble-truths"
             className="text-lg text-primary underline-offset-4 hover:underline"
           >
             четырёх благородных истин,{' '}
           </Link>
           или{' '}
           <Link
-            href="/magazine/stoicism/doc"
+            href="/magazine/philosophy/stoicism/doc"
             className="text-lg text-primary underline-offset-4 hover:underline"
           >
             дихотомии контроля,{' '}
