@@ -1,29 +1,32 @@
 /**
- * Sitemap for vimutti.ru — generated at build time and served at /sitemap.xml.
+ * @file Карта сайта vimutti.ru: генерируется при сборке и отдаётся по `/sitemap.xml`.
  *
- * Next.js calls this function to produce the sitemap XML. Search engines use it
- * to discover all public pages (home, magazine index, category listings, and
- * individual articles) and to prioritize crawling.
+ * Next.js вызывает экспорт по умолчанию и собирает XML. Поисковики по нему находят публичные
+ * URL и ориентируются в приоритетах обхода.
+ *
+ * **Состав записей:** главная и индекс журнала, страницы категорий со статьями, страницы статей
+ * (каждый файл `.mdx` в дереве каталога `content/articles`).
  *
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap
  */
 
 import type { MetadataRoute } from 'next';
-import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
 import { getCategoryPaths } from '@/features/magazine/lib/get-all-articles';
+import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
 
-/** Canonical origin for sitemap URLs. Must match production domain. */
+/** Базовый origin для абсолютных URL в sitemap; должен совпадать с продакшен-доменом. */
 const BASE_URL = 'https://www.vimutti.ru';
 
 /**
- * Builds the full sitemap: static pages, category listing pages, and article pages.
+ * Собирает полный список URL: статика, категории журнала, статьи.
  *
- * - **Static pages**: `/` and `/magazine` with higher priority.
- * - **Category pages**: Every category path that has articles (e.g. `psychology`, `psychology/cbt`),
- *   excluding paths that coincide with an article slug so we don’t list the same URL twice.
- * - **Article pages**: Every MDX file under `content/articles/`, one URL per article.
+ * - **Статика** — `/` и `/magazine` (повышенный `priority`).
+ * - **Категории** — все пути из `getCategoryPaths`, по которым реально есть материалы
+ *   (например `psychology`, `psychology/cbt`). Путь исключается, если он совпадает со слогом
+ *   статьи, чтобы не дублировать один URL в разделах «категория» и «статья».
+ * - **Статьи** — по одному URL на каждый `.mdx` под `content/articles/`.
  *
- * @returns Next.js sitemap entries (url, lastModified, priority, changeFrequency).
+ * @returns Массив записей sitemap Next.js: `url`, `lastModified`, `priority`, `changeFrequency`.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [articleSlugs, categoryPaths] = await Promise.all([
@@ -35,7 +38,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL, lastModified: new Date(), priority: 1.0, changeFrequency: 'weekly' },
-    { url: `${BASE_URL}/magazine`, lastModified: new Date(), priority: 0.9, changeFrequency: 'weekly' },
+    {
+      url: `${BASE_URL}/magazine`,
+      lastModified: new Date(),
+      priority: 0.9,
+      changeFrequency: 'weekly',
+    },
   ];
 
   const categories: MetadataRoute.Sitemap = categoryPaths
