@@ -6,7 +6,7 @@
 import { ROOT_CATEGORIES } from '@/features/magazine/lib/category-meta';
 
 const ROOT_LABELS: Record<string, string> = Object.fromEntries(
-  ROOT_CATEGORIES.map((c) => [c.slug, c.label]),
+  ROOT_CATEGORIES.map((c) => [c.slug, c.label])
 );
 
 const LABELS: Record<string, string> = {
