@@ -1,20 +1,17 @@
 import { cache } from 'react';
+import { importArticleMdx } from '@/features/magazine/lib/load-article-mdx';
 import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
-import type {
-  ArticleFrontmatter,
-  ArticleListCard,
-  RemarkMdxParsedData,
-} from '@/features/magazine/types';
+import type { ArticleFrontmatter, ArticleListCard } from '@/features/magazine/types';
 
 async function getAllArticlesUncached(): Promise<ArticleFrontmatter[]> {
   const slugs = getAllSlugs();
-  const slugPaths = slugs.map((parts) => parts.join('/'));
 
   const articles = await Promise.all(
-    slugPaths.map(async (slugPath): Promise<ArticleFrontmatter> => {
+    slugs.map(async (parts): Promise<ArticleFrontmatter> => {
+      const slugPath = parts.join('/');
       const {
         frontmatter: { title, description, date, tags, category },
-      } = (await import(`@/content/articles/${slugPath}.mdx`)) as RemarkMdxParsedData;
+      } = await importArticleMdx(parts);
 
       return {
         slug: slugPath,

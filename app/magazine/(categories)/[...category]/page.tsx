@@ -16,9 +16,10 @@ import {
   getCategoryPaths,
   getRelatedArticles,
 } from '@/features/magazine/lib/get-all-articles';
+import { getArticleHeroImage } from '@/features/magazine/lib/article-hero-images';
 import { getSubDirectionsForPath } from '@/features/magazine/lib/get-category-tree';
+import { importArticleMdx } from '@/features/magazine/lib/load-article-mdx';
 import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
-import type { RemarkMdxParsedData } from '@/features/magazine/types';
 import { SITE_NAME } from '@/lib/site';
 
 /** Canonical base URL for absolute links in metadata. */
@@ -52,9 +53,7 @@ export async function generateMetadata({
   const { pathStr, isArticle } = resolveSegments(segments);
 
   if (isArticle) {
-    const { frontmatter } = (await import(
-      `@/content/articles/${pathStr}.mdx`
-    )) as RemarkMdxParsedData;
+    const { frontmatter } = await importArticleMdx(segments);
 
     const title = frontmatter.title || pathStr;
     const description = frontmatter.description || '';
@@ -123,15 +122,14 @@ export default async function Page({
   const { pathStr, isArticle } = resolveSegments(segments);
 
   if (isArticle) {
-    const { default: Post, frontmatter } = (await import(
-      `@/content/articles/${pathStr}.mdx`
-    )) as RemarkMdxParsedData;
+    const { default: Post, frontmatter } = await importArticleMdx(segments);
     const relatedArticles = await getRelatedArticles(
       pathStr,
       frontmatter?.category ?? [],
       frontmatter?.tags ?? [],
       5
     );
+    const heroImage = await getArticleHeroImage(pathStr);
     return (
       <>
         {/* Родительские сегменты URL без slug статьи; заголовок — из frontmatter */}
@@ -145,6 +143,8 @@ export default async function Page({
           description={frontmatter?.description}
           date={frontmatter?.date}
           slugPath={pathStr}
+          heroImage={heroImage}
+          heroAlt={frontmatter?.coverAlt ?? frontmatter?.title ?? ''}
           relatedArticles={relatedArticles}
         >
           <Post />

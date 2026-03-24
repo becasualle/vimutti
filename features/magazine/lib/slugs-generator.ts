@@ -2,40 +2,35 @@
  * @file Обход дерева `content/articles` и построение списка «слогов» статей для статической
  * генерации, карты сайта и загрузки MDX.
  *
- * **Контракт:** одна статья — один файл `*.mdx`. Подкаталоги задают префикс URL (категории).
- * **Окружение:** синхронный `fs`, только Node.js (build / SSR), не вызывать из клиентского бандла.
+ * **Контракт:** статья — это либо `…/<slug>.mdx`, либо папка `…/<slug>/index.mdx` (одна папка на
+ * материал: рядом кладут `hero.webp`, иллюстрации и т.д.). Подкаталоги без `index.mdx` задают
+ * префикс URL (категории). **Окружение:** синхронный `fs`, только Node.js (build / SSR).
  *
- * **Связанные модули:** `getAllArticles` (`get-all-articles.ts`), `generateStaticParams` в
- * `app/magazine/(categories)/[...category]/page.tsx`, sitemap в `app/sitemap.ts`.
+ * @see `importArticleMdx` в `load-article-mdx.ts` — загрузка MDX для страниц и списков.
  */
-import { readdirSync, statSync } from 'fs';
+import { existsSync, readdirSync, statSync } from 'fs';
 import path from 'path';
 
 /** Корень статей относительно корня репозитория. */
-const articlesDirectory = path.join(process.cwd(), 'content/articles');
+export const articlesDirectory = path.join(process.cwd(), 'content/articles');
 
 /**
- * Сегменты пути статьи относительно `content/articles` (без расширения `.mdx`).
- * Совпадает с путём импорта MDX: `@/content/articles/${segments.join('/')}.mdx`.
+ * Сегменты пути статьи относительно `content/articles` (без суффикса `.mdx` / без сегмента `index`).
+ * Совпадает с путём в URL после `/magazine`.
  *
- * @example
- * Файл `content/articles/psychology/cbt/article-slug.mdx` → `["psychology", "cbt", "article-slug"]`.
+ * @example Файл `content/articles/psychology/cbt/article-slug.mdx` → `["psychology", "cbt", "article-slug"]`.
+ * @example Папка `content/articles/techniques/thought-diary/index.mdx` → `["techniques", "thought-diary"]`.
  */
 export type ArticleSlugSegments = string[];
 
 /**
  * Возвращает список всех статей: рекурсивно обходит каталоги, собирает пути ко всем `.mdx`.
  * Порядок имён на каждом уровне — лексикографический (`sort()`).
- *
- * @returns Массив слогов; пустые каталоги и файлы не-`.mdx` игнорируются.
  */
 export function getAllSlugs(): ArticleSlugSegments[] {
   return collectSlugsFromDir(articlesDirectory);
 }
 
-/**
- * Рекурсивный обход: вложенные папки — глубже в URL, листья — только `.mdx`.
- */
 function collectSlugsFromDir(dir: string): ArticleSlugSegments[] {
   const items = readdirSync(dir).sort();
   const slugs: ArticleSlugSegments[] = [];
@@ -45,11 +40,24 @@ function collectSlugsFromDir(dir: string): ArticleSlugSegments[] {
     const isDirectory = statSync(fullPath).isDirectory();
 
     if (isDirectory) {
-      slugs.push(...collectSlugsFromDir(fullPath));
+      const indexPath = path.join(fullPath, 'index.mdx');
+      if (existsSync(indexPath)) {
+        const rel = path.relative(articlesDirectory, fullPath);
+        slugs.push(rel.split(path.sep).filter(Boolean));
+      } else {
+        slugs.push(...collectSlugsFromDir(fullPath));
+      }
     } else if (item.endsWith('.mdx')) {
-      const relativePath = path.relative(articlesDirectory, fullPath);
-      const slug = relativePath.replace(/\.mdx$/, '').split(path.sep);
-      slugs.push(slug);
+      if (item === 'index.mdx') {
+        const relDir = path.relative(articlesDirectory, dir);
+        if (relDir) {
+          slugs.push(relDir.split(path.sep).filter(Boolean));
+        }
+      } else {
+        const relativePath = path.relative(articlesDirectory, fullPath);
+        const slug = relativePath.replace(/\.mdx$/, '').split(path.sep);
+        slugs.push(slug);
+      }
     }
   }
 

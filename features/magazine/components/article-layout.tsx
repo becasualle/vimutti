@@ -2,6 +2,7 @@
  * Вёрстка страницы одной статьи: заголовок, дата, JSON-LD Article, блок «Похожие статьи».
  * Хлебные крошки задаются снаружи (страница catch-all), не внутри этого компонента.
  */
+import Image, { type StaticImageData } from 'next/image';
 import Link from 'next/link';
 import { TypographyH1 } from '@/components/ui/typography/heading-elements/typography-h1';
 import type { RelatedArticle } from '@/features/magazine/lib/get-all-articles';
@@ -19,6 +20,10 @@ type ArticleLayoutProps = {
    * Нужен для канонического URL и разметки JSON-LD.
    */
   slugPath?: string;
+  /** Обложка под заголовком (коллокированный `.webp`, см. `article-hero-images.ts`). */
+  heroImage?: StaticImageData;
+  /** Alt для обложки; при отсутствии — пустая строка (лучше задать в frontmatter `coverAlt`). */
+  heroAlt?: string;
   /** Похожие статьи для внутренней перелинковки и SEO. */
   relatedArticles?: RelatedArticle[];
 };
@@ -77,6 +82,8 @@ export default function ArticleLayout({
   description,
   date,
   slugPath,
+  heroImage,
+  heroAlt,
   relatedArticles,
 }: ArticleLayoutProps) {
   const canonicalUrl = slugPath ? `${BASE_URL}/magazine/${slugPath}` : undefined;
@@ -101,6 +108,19 @@ export default function ArticleLayout({
               {title}
             </span>
           </TypographyH1>
+        )}
+        {heroImage && (
+          <div className="relative mb-6 aspect-video w-full overflow-hidden rounded-lg border border-border shadow-sm">
+            <Image
+              src={heroImage}
+              alt={heroAlt ?? ''}
+              fill
+              priority
+              placeholder="blur"
+              sizes="(max-width: 768px) 100vw, 740px"
+              className="object-cover"
+            />
+          </div>
         )}
         {date && (
           <time

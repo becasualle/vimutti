@@ -29,7 +29,6 @@ const LABELS: Record<string, string> = {
   'osnovy-raboty-psihologa-s-posledstviyami-travmaticheskih-sobytij':
     'Работа с последствиями травмы и гореванием',
   'psihoterapiya-zavisimostej': 'Психотерапия зависимостей',
-  techniques: 'Техники',
 };
 
 function slugToLabel(slug: string): string {
