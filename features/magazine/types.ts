@@ -7,6 +7,8 @@ export interface ArticleFrontmatter {
   date: string;
   tags: string[];
   category: string[]; // ["psychology", "cbt"]
+  /** Подпись к обложке (alt), если для статьи подключён hero в `article-hero-images.ts`. */
+  coverAlt?: string;
 }
 
 export interface ArticleListCard {

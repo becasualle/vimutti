@@ -161,7 +161,7 @@ export interface CategoryInfo {
  */
 function directionsForArticles(
   articles: ArticleFrontmatter[],
-  parentPath: string[],
+  parentPath: string[]
 ): DirectionInfo[] {
   if (parentPath.length === 0) return [];
   const counts = new Map<string, number>();
@@ -201,8 +201,9 @@ async function getSubDirectionsForPathUncached(parentPath: string[]): Promise<Di
 export const getSubDirectionsForPath = cache(getSubDirectionsForPathUncached);
 
 /**
- * Список корневых разделов в порядке {@link CATEGORY_ORDER}, у каждого — направления с ненулевым
- * числом статей. Разделы без материалов и без метаданных в `CATEGORIES_META` не попадают в список.
+ * Список корневых разделов в порядке {@link CATEGORY_ORDER}, у каждого — направления первого уровня
+ * (если есть) и число статей по префиксу категории. Раздел без статей в `CATEGORIES_META` не попадает
+ * в список. Корень с плоскими статьями (`category: [slug]`) показывается даже без поднаправлений.
  */
 async function getCategoryTreeUncached(): Promise<CategoryInfo[]> {
   const articles = await getAllArticles();
@@ -210,16 +211,20 @@ async function getCategoryTreeUncached(): Promise<CategoryInfo[]> {
 
   for (const slug of CATEGORY_ORDER) {
     const meta = CATEGORIES_META[slug];
-    const directions = directionsForArticles(articles, [slug]);
-    if (!meta || directions.length === 0) continue;
+    if (!meta) continue;
 
-    const totalArticleCount = directions.reduce((sum, d) => sum + d.articleCount, 0);
+    const inCategory = articles.filter(
+      (a) => a.category.length >= 1 && [slug].every((seg, i) => a.category[i] === seg)
+    );
+    if (inCategory.length === 0) continue;
+
+    const directions = directionsForArticles(articles, [slug]);
 
     result.push({
       slug,
       label: meta.label,
       description: meta.description,
-      totalArticleCount,
+      totalArticleCount: inCategory.length,
       directions,
       href: magazineHref([slug]),
     });

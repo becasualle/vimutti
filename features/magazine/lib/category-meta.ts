@@ -8,13 +8,18 @@ export const ROOT_CATEGORIES = [
   {
     slug: 'psychology',
     label: 'Психология',
-    description:
-      'Клиническая психология, психотерапия, коучинг, работа с зависимостями и травмой',
+    description: 'Клиническая психология, психотерапия, коучинг, работа с зависимостями и травмой',
   },
   {
     slug: 'philosophy',
     label: 'Философия',
     description: 'Буддизм, стоицизм и другие философские традиции освобождения ума',
+  },
+  {
+    slug: 'techniques',
+    label: 'Техники',
+    description:
+      'Практические упражнения и инструменты из психотерапии, коучинга и направлений, основанных на осознанности',
   },
 ] as const;
 
@@ -28,5 +33,5 @@ export const CATEGORY_ORDER: readonly RootCategorySlug[] = ROOT_CATEGORIES.map((
 
 /** Доступ по slug для мест, где удобнее lookup, чем перебор массива. */
 export const CATEGORIES_META: Record<RootCategorySlug, CategoryMeta> = Object.fromEntries(
-  ROOT_CATEGORIES.map((c) => [c.slug, c]),
+  ROOT_CATEGORIES.map((c) => [c.slug, c])
 ) as Record<RootCategorySlug, CategoryMeta>;
