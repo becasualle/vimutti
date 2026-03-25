@@ -15,6 +15,7 @@ async function getAllArticlesUncached(): Promise<ArticleFrontmatter[]> {
 
       return {
         path: articlePath,
+        segments: parts,
         title: title ?? '',
         description: description ?? '',
         date: date ?? '',
@@ -66,6 +67,7 @@ export async function getCategoryPaths(): Promise<string[][]> {
 export function articleToCard(a: ArticleFrontmatter): ArticleListCard {
   return {
     path: a.path,
+    segments: a.segments,
     title: a.title,
     content: a.description,
     action: 'Читать',
@@ -75,7 +77,7 @@ export function articleToCard(a: ArticleFrontmatter): ArticleListCard {
 }
 
 /** Related article for internal linking (SEO and UX). */
-export type RelatedArticle = { path: string; title: string };
+export type RelatedArticle = { path: string; title: string; segments: string[] };
 
 /**
  * Похожие статьи по общей категории (полное совпадение префикса или пересечение сегментов) и пересечению тегов;
@@ -117,5 +119,9 @@ export async function getRelatedArticles(
 
   return scored
     .slice(0, limit)
-    .map(({ article }) => ({ path: article.path, title: article.title }));
+    .map(({ article }) => ({
+      path: article.path,
+      title: article.title,
+      segments: article.segments,
+    }));
 }

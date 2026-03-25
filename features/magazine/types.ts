@@ -20,6 +20,8 @@ export interface ArticleFrontmatter {
   title: string;
   /** Joined path under `content/articles` (e.g. `psychology/cbt/article`); URL segment after `/magazine/`. */
   path: string;
+  /** Сегменты пути статьи (как в `getAllSlugs`); для `magazineHref` без join/split. */
+  segments: string[];
   description: string;
   date: string;
   tags: string[];
@@ -30,6 +32,7 @@ export interface ArticleFrontmatter {
 
 export interface ArticleListCard {
   path: string;
+  segments: string[];
   title: string;
   description?: string;
   action?: string;

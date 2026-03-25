@@ -6,6 +6,7 @@ import Image, { type StaticImageData } from 'next/image';
 import Link from 'next/link';
 import { TypographyH1 } from '@/components/ui/typography/heading-elements/typography-h1';
 import type { RelatedArticle } from '@/features/magazine/lib/get-all-articles';
+import { magazineHref } from '@/features/magazine/lib/magazine-path';
 import { BASE_URL, SITE_NAME } from '@/lib/site';
 
 type ArticleLayoutProps = {
@@ -141,7 +142,7 @@ export default function ArticleLayout({
             {relatedArticles.map((a) => (
               <li key={a.path}>
                 <Link
-                  href={`/magazine/${a.path}`}
+                  href={magazineHref(a.segments)}
                   className="text-primary underline-offset-4 hover:underline"
                 >
                   {a.title}

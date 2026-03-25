@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ButtonLink } from '@/components/ui/button-link';
 import { CardAction, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { magazineHref } from '@/features/magazine/lib/magazine-path';
 import type { ArticleListCard } from '@/features/magazine/types';
 import { cn } from '@/lib/utils';
 
@@ -23,7 +24,7 @@ export function ArticleList({ cards }: { cards: ArticleListCard[] }) {
           <CardHeader>
             <h2 id={`article-title-${c.path}`} className="leading-none font-semibold text-xl">
               <Link
-                href={`/magazine/${c.path}`}
+                href={magazineHref(c.segments)}
                 className="text-foreground underline-offset-4 hover:underline"
               >
                 {c.title}
@@ -45,7 +46,7 @@ export function ArticleList({ cards }: { cards: ArticleListCard[] }) {
             )}
           </CardFooter>
           <CardAction className="mt-auto pr-6 self-end">
-            <ButtonLink href={`/magazine/${c.path}`}>Читать</ButtonLink>
+            <ButtonLink href={magazineHref(c.segments)}>Читать</ButtonLink>
           </CardAction>
         </article>
       ))}
