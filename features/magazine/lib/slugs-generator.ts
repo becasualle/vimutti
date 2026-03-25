@@ -142,6 +142,44 @@ export function getAllSlugs(): ArticleSlugSegments[] {
   return collectSlugsFromDir(articlesDirectory);
 }
 
+/** Кэш множества путей `сегменты.join('/')` по всем статьям; заполняется при первом обращении. */
+let slugPathSet: Set<string> | null = null;
+
+/**
+ * Множество путей статей в виде одной строки (`psychology/cbt/slug`).
+ *
+ * @returns Тот же Set при повторных вызовах в рамках процесса (ленивая инициализация).
+ */
+export function getArticleSlugPathSet(): Set<string> {
+  if (!slugPathSet) {
+    slugPathSet = new Set(getAllSlugs().map((s) => s.join('/')));
+  }
+  return slugPathSet;
+}
+
+/**
+ * @param pathStr — путь без префикса `/magazine`, сегменты через `/`.
+ * @returns `true`, если такой путь соответствует файлу/папке статьи в `content/articles`.
+ */
+export function isArticleSlug(pathStr: string): boolean {
+  return getArticleSlugPathSet().has(pathStr);
+}
+
+/**
+ * Определяет, ведёт ли URL на статью (MDX) или на листинг категории.
+ *
+ * @param segments — значение `[...category]` из Next.js.
+ * @returns `pathStr` — склейка сегментов; `isArticle` — есть ли статья с таким полным путём.
+ *
+ * @example
+ * resolveMagazineSegments(['psychology', 'cbt', 'my-article']) // статья
+ * resolveMagazineSegments(['psychology', 'cbt']) // листинг, если нет статьи ровно на этом пути
+ */
+export function resolveMagazineSegments(segments: string[]): { pathStr: string; isArticle: boolean } {
+  const pathStr = segments.join('/');
+  return { pathStr, isArticle: isArticleSlug(pathStr) };
+}
+
 function collectSlugsFromDir(dir: string): ArticleSlugSegments[] {
   const items = readdirSync(dir).sort();
   const slugs: ArticleSlugSegments[] = [];

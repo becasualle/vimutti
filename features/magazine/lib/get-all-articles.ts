@@ -1,4 +1,9 @@
+/**
+ * @file Сводный доступ к статьям журнала: загрузка frontmatter из всех MDX (кэш React), фильтр по категории,
+ * пути категорий для SSG, карточки списков, подбор похожих материалов.
+ */
 import { cache } from 'react';
+import { categorySharedPrefixLength, categoryStartsWith } from '@/features/magazine/lib/category-utils';
 import { hasCategoryLabelEntry } from '@/features/magazine/lib/category-labels';
 import { importArticleMdx } from '@/features/magazine/lib/load-article-mdx';
 import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
@@ -65,11 +70,7 @@ export const getAllArticles = cache(getAllArticlesUncached);
  */
 export async function getArticlesByCategory(categoryPath: string[]): Promise<ArticleFrontmatter[]> {
   const articles = await getAllArticles();
-  return articles.filter(
-    (a) =>
-      a.category.length >= categoryPath.length &&
-      categoryPath.every((seg, i) => a.category[i] === seg)
-  );
+  return articles.filter((a) => categoryStartsWith(a.category, categoryPath));
 }
 
 /** Все префиксы категорий, для которых getArticlesByCategory(path).length > 0. */
@@ -101,14 +102,6 @@ export function articleToCard(a: ArticleFrontmatter): ArticleListCard {
 /** Related article for internal linking (SEO and UX). */
 export type RelatedArticle = { path: string; title: string; segments: string[] };
 
-/** Length of the shared prefix from index 0 between two category segment arrays (order matters). */
-function sharedCategoryPrefixLength(a: string[], b: string[]): number {
-  const n = Math.min(a.length, b.length);
-  let i = 0;
-  while (i < n && a[i] === b[i]) i++;
-  return i;
-}
-
 /**
  * Похожие статьи по глубине общего префикса категории и пересечению тегов;
  * текущая статья исключается. Сортировка: сначала релевантность (длина префикса категории, затем число общих тегов), затем дата по убыванию.
@@ -132,7 +125,7 @@ export async function getRelatedArticles(
     .filter((a) => a.path !== currentPath)
     .map((a) => {
       const prefixLen =
-        category.length > 0 ? sharedCategoryPrefixLength(category, a.category) : 0;
+        category.length > 0 ? categorySharedPrefixLength(category, a.category) : 0;
       const tagOverlap = a.tags?.filter((t) => tagSet.has(t)).length ?? 0;
       return { article: a, score: prefixLen * 10 + tagOverlap };
     })

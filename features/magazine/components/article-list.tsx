@@ -1,13 +1,24 @@
 import Link from 'next/link';
 import { ButtonLink } from '@/components/ui/button-link';
-import { CardAction, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import {
+  CardAction,
+  cardBaseClasses,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@/components/ui/card';
 import { magazineHref } from '@/features/magazine/lib/magazine-path';
 import type { ArticleListCard } from '@/features/magazine/types';
 import { cn } from '@/lib/utils';
 
-const articleCardClasses =
-  'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm';
-
+/**
+ * Сетка карточек превью статей: заголовок-ссылка, описание, футер (теги), кнопка «Читать».
+ *
+ * Пустой `cards`: короткое сообщение пользователю (не throw).
+ *
+ * @param cards — объекты в форме `ArticleListCard` (`features/magazine/types.ts`). Частый источник —
+ *   `articleToCard` в `features/magazine/lib/get-all-articles.ts`. В `map` ключ элемента — `path` или `title`.
+ */
 export function ArticleList({ cards }: { cards: ArticleListCard[] }) {
   if (cards.length === 0) {
     return <div>К сожалению, не удалось найти статьи</div>;
@@ -18,7 +29,7 @@ export function ArticleList({ cards }: { cards: ArticleListCard[] }) {
       {cards.map((c) => (
         <article
           key={c.path || c.title}
-          className={cn(articleCardClasses)}
+          className={cn(cardBaseClasses)}
           aria-labelledby={`article-title-${c.path}`}
         >
           <CardHeader>

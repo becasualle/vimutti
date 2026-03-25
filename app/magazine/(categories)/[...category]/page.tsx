@@ -3,7 +3,6 @@
  * Отдаёт либо одну статью (MDX), либо список статей по префиксу категории.
  * Перед контентом рендерится `MagazineBreadcrumbs` с пропсами из `segments` и frontmatter.
  */
-import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ArticleLayout from '@/features/magazine/components/article-layout';
 import { ArticleListSection } from '@/features/magazine/components/article-list-section';
@@ -19,83 +18,10 @@ import {
 import { getArticleHeroImage } from '@/features/magazine/lib/article-hero-images';
 import { getSubDirectionsForPath } from '@/features/magazine/lib/get-category-tree';
 import { importArticleMdx } from '@/features/magazine/lib/load-article-mdx';
-import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
-import { BASE_URL, SITE_NAME } from '@/lib/site';
+import { magazineHref } from '@/features/magazine/lib/magazine-path';
+import { getAllSlugs, resolveMagazineSegments } from '@/features/magazine/lib/slugs-generator';
 
-/**
- * Resolves catch-all route segments into a path string and whether it points to an article.
- * @param segments - URL path segments from the `[...category]` param (e.g. `['psychology', 'cbt']`).
- * @returns Object with `pathStr` (e.g. `'psychology/cbt'`) and `isArticle` (true if that path is an article slug).
- */
-function resolveSegments(segments: string[]) {
-  const pathStr = segments.join('/');
-  const articleSlugs = new Set(getAllSlugs().map((p) => p.join('/')));
-  return { pathStr, isArticle: articleSlugs.has(pathStr) };
-}
-
-/**
- * Generates per-page metadata for SEO (title, description, OpenGraph, Twitter).
- * For article paths, uses frontmatter; for category paths, uses the category title.
- * @param props - Next.js page props with resolved `params`.
- * @returns Metadata for the current route, or empty object when segments are empty.
- */
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ category: string[] }>;
-}): Promise<Metadata> {
-  const { category: segments } = await params;
-  if (segments.length === 0) return {};
-
-  const { pathStr, isArticle } = resolveSegments(segments);
-
-  if (isArticle) {
-    const { frontmatter } = await importArticleMdx(segments);
-
-    const title = frontmatter.title || pathStr;
-    const description = frontmatter.description || '';
-    const url = `${BASE_URL}/magazine/${pathStr}`;
-
-    return {
-      title,
-      description,
-      alternates: { canonical: `/magazine/${pathStr}` },
-      openGraph: {
-        title,
-        description,
-        url,
-        siteName: SITE_NAME,
-        type: 'article',
-        locale: 'ru_RU',
-        publishedTime: frontmatter.date,
-        tags: frontmatter.tags,
-      },
-      twitter: {
-        card: 'summary',
-        title,
-        description,
-      },
-    };
-  }
-
-  const categoryTitle = getCategoryTitle(segments);
-  const description = `Статьи по теме «${categoryTitle}»`;
-  const url = `${BASE_URL}/magazine/${pathStr}`;
-
-  return {
-    title: categoryTitle,
-    description,
-    alternates: { canonical: `/magazine/${pathStr}` },
-    openGraph: {
-      title: categoryTitle,
-      description,
-      url,
-      siteName: SITE_NAME,
-      type: 'website',
-      locale: 'ru_RU',
-    },
-  };
-}
+export { generateMetadata } from '@/features/magazine/lib/magazine-catchall-metadata';
 
 /**
  * Catch-all magazine page: renders either a single article or a category listing.
@@ -116,7 +42,7 @@ export default async function Page({
   const { full } = await searchParams;
   const showFull = full === '1';
 
-  const { pathStr, isArticle } = resolveSegments(segments);
+  const { pathStr, isArticle } = resolveMagazineSegments(segments);
 
   if (isArticle) {
     const { default: Post, frontmatter } = await importArticleMdx(segments);
@@ -173,7 +99,9 @@ export default async function Page({
             title={showFull ? 'Все статьи' : 'Последние статьи'}
             titleAs="h2"
             limit={showFull ? undefined : 6}
-            showAllHref={!showFull && articles.length > 6 ? `/magazine/${pathStr}?full=1` : undefined}
+            showAllHref={
+              !showFull && articles.length > 6 ? `${magazineHref(segments)}?full=1` : undefined
+            }
             className="max-w-none py-0 px-0 sm:px-0 lg:px-0"
           />
         </div>

@@ -4,7 +4,7 @@
  */
 import Image, { type StaticImageData } from 'next/image';
 import Link from 'next/link';
-import { TypographyH1 } from '@/components/ui/typography/heading-elements/typography-h1';
+import { TypographyH1 } from '@/components/ui/typography';
 import type { RelatedArticle } from '@/features/magazine/lib/get-all-articles';
 import { magazineHref } from '@/features/magazine/lib/magazine-path';
 import { BASE_URL, SITE_NAME } from '@/lib/site';

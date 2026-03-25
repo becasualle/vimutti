@@ -1,3 +1,8 @@
+/**
+ * @file Динамический импорт MDX статьи по сегментам пути в `content/articles`.
+ *
+ * Два шаблона импорта с литеральным `.mdx` в конце, чтобы webpack не тянул посторонние файлы из каталога.
+ */
 import { existsSync } from 'fs';
 import path from 'path';
 import {
@@ -6,10 +11,6 @@ import {
 } from '@/features/magazine/lib/slugs-generator';
 import type { RemarkMdxParsedData } from '@/features/magazine/types';
 
-/**
- * Загрузка MDX статьи. Два шаблона импорта с литеральным `.mdx` в конце, чтобы webpack не тянул
- * посторонние файлы из `content/articles`.
- */
 export async function importArticleMdx(
   segments: ArticleSlugSegments
 ): Promise<RemarkMdxParsedData> {
