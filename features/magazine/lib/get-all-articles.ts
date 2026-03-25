@@ -1,7 +1,27 @@
 import { cache } from 'react';
+import { hasCategoryLabelEntry } from '@/features/magazine/lib/category-labels';
 import { importArticleMdx } from '@/features/magazine/lib/load-article-mdx';
 import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
 import type { ArticleFrontmatter, ArticleListCard } from '@/features/magazine/types';
+
+let warnedMissingCategoryLabels = false;
+
+function warnMissingCategoryLabelsOnce(articles: ArticleFrontmatter[]): void {
+  if (warnedMissingCategoryLabels) return;
+  warnedMissingCategoryLabels = true;
+  const segments = new Set<string>();
+  for (const a of articles) {
+    for (const seg of a.category) {
+      segments.add(seg);
+    }
+  }
+  const missing = [...segments].filter((s) => !hasCategoryLabelEntry(s)).sort();
+  if (missing.length === 0) return;
+  console.warn(
+    '[magazine] Сегменты category без записей в LABELS/ROOT_LABELS (подпись — Title Case): ' +
+      missing.join(', ')
+  );
+}
 
 async function getAllArticlesUncached(): Promise<ArticleFrontmatter[]> {
   const slugs = getAllSlugs();
@@ -24,6 +44,8 @@ async function getAllArticlesUncached(): Promise<ArticleFrontmatter[]> {
       };
     })
   );
+
+  warnMissingCategoryLabelsOnce(articles);
 
   return articles;
 }
