@@ -1,14 +1,8 @@
-import { isArray } from 'lodash-es';
 import Link from 'next/link';
 import { ButtonLink } from '@/components/ui/button-link';
-import {
-  CardAction,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { CardAction, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import type { ArticleListCard } from '@/features/magazine/types';
+import { cn } from '@/lib/utils';
 
 const articleCardClasses =
   'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm';
@@ -22,17 +16,14 @@ export function ArticleList({ cards }: { cards: ArticleListCard[] }) {
     <>
       {cards.map((c) => (
         <article
-          key={c.slug || c.title}
+          key={c.path || c.title}
           className={cn(articleCardClasses)}
-          aria-labelledby={`article-title-${c.slug}`}
+          aria-labelledby={`article-title-${c.path}`}
         >
           <CardHeader>
-            <h2
-              id={`article-title-${c.slug}`}
-              className="leading-none font-semibold text-xl"
-            >
+            <h2 id={`article-title-${c.path}`} className="leading-none font-semibold text-xl">
               <Link
-                href={`/magazine/${c.slug}`}
+                href={`/magazine/${c.path}`}
                 className="text-foreground underline-offset-4 hover:underline"
               >
                 {c.title}
@@ -43,7 +34,7 @@ export function ArticleList({ cards }: { cards: ArticleListCard[] }) {
             <p>{c.content}</p>
           </CardContent>
           <CardFooter>
-            {isArray(c.footer) ? (
+            {Array.isArray(c.footer) ? (
               <div className="flex flex-wrap gap-1 text-muted-foreground text-sm">
                 {c.footer.map((tag) => (
                   <span key={tag}>{tag}</span>
@@ -54,7 +45,7 @@ export function ArticleList({ cards }: { cards: ArticleListCard[] }) {
             )}
           </CardFooter>
           <CardAction className="mt-auto pr-6 self-end">
-            <ButtonLink href={`/magazine/${c.slug}`}>Читать</ButtonLink>
+            <ButtonLink href={`/magazine/${c.path}`}>Читать</ButtonLink>
           </CardAction>
         </article>
       ))}

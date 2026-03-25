@@ -8,13 +8,13 @@ async function getAllArticlesUncached(): Promise<ArticleFrontmatter[]> {
 
   const articles = await Promise.all(
     slugs.map(async (parts): Promise<ArticleFrontmatter> => {
-      const slugPath = parts.join('/');
+      const articlePath = parts.join('/');
       const {
         frontmatter: { title, description, date, tags, category },
       } = await importArticleMdx(parts);
 
       return {
-        slug: slugPath,
+        path: articlePath,
         title: title ?? '',
         description: description ?? '',
         date: date ?? '',
@@ -65,7 +65,7 @@ export async function getCategoryPaths(): Promise<string[][]> {
 
 export function articleToCard(a: ArticleFrontmatter): ArticleListCard {
   return {
-    slug: a.slug,
+    path: a.path,
     title: a.title,
     content: a.description,
     action: 'Читать',
@@ -75,20 +75,20 @@ export function articleToCard(a: ArticleFrontmatter): ArticleListCard {
 }
 
 /** Related article for internal linking (SEO and UX). */
-export type RelatedArticle = { slug: string; title: string };
+export type RelatedArticle = { path: string; title: string };
 
 /**
  * Похожие статьи по общей категории (полное совпадение префикса или пересечение сегментов) и пересечению тегов;
  * текущая статья исключается. Сортировка: сначала релевантность (категория, затем число общих тегов), затем дата по убыванию.
  *
- * @param currentSlug — slug статьи без префикса `/magazine`, например `psychology/cbt/article`.
+ * @param currentPath — путь статьи без префикса `/magazine`, например `psychology/cbt/article`.
  * @param category — массив сегментов категории из frontmatter текущей статьи.
  * @param tags — теги текущей статьи.
  * @param limit — максимум записей в ответе (по умолчанию 5).
- * @returns `{ slug, title }` для внутренних ссылок и SEO.
+ * @returns `{ path, title }` для внутренних ссылок и SEO.
  */
 export async function getRelatedArticles(
-  currentSlug: string,
+  currentPath: string,
   category: string[],
   tags: string[],
   limit = 5
@@ -97,7 +97,7 @@ export async function getRelatedArticles(
   const tagSet = new Set(tags);
 
   const scored = articles
-    .filter((a) => a.slug !== currentSlug)
+    .filter((a) => a.path !== currentPath)
     .map((a) => {
       const categoryMatch =
         category.length > 0 && a.category.length >= category.length
@@ -117,5 +117,5 @@ export async function getRelatedArticles(
 
   return scored
     .slice(0, limit)
-    .map(({ article }) => ({ slug: article.slug, title: article.title }));
+    .map(({ article }) => ({ path: article.path, title: article.title }));
 }

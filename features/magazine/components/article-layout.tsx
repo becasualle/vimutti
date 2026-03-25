@@ -139,9 +139,9 @@ export default function ArticleLayout({
           <h2 className="mb-4 text-xl font-semibold">Похожие статьи</h2>
           <ul className="space-y-2">
             {relatedArticles.map((a) => (
-              <li key={a.slug}>
+              <li key={a.path}>
                 <Link
-                  href={`/magazine/${a.slug}`}
+                  href={`/magazine/${a.path}`}
                   className="text-primary underline-offset-4 hover:underline"
                 >
                   {a.title}

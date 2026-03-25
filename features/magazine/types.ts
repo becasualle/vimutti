@@ -2,7 +2,8 @@ import type { ComponentType } from 'react';
 
 export interface ArticleFrontmatter {
   title: string;
-  slug: string;
+  /** Joined path under `content/articles` (e.g. `psychology/cbt/article`); URL segment after `/magazine/`. */
+  path: string;
   description: string;
   date: string;
   tags: string[];
@@ -12,7 +13,7 @@ export interface ArticleFrontmatter {
 }
 
 export interface ArticleListCard {
-  slug: string;
+  path: string;
   title: string;
   description?: string;
   action?: string;
