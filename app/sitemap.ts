@@ -13,9 +13,7 @@
 import type { MetadataRoute } from 'next';
 import { getCategoryPaths } from '@/features/magazine/lib/get-all-articles';
 import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
-
-/** Базовый origin для абсолютных URL в sitemap; должен совпадать с продакшен-доменом. */
-const BASE_URL = 'https://www.vimutti.ru';
+import { BASE_URL } from '@/lib/site';
 
 /**
  * Собирает полный список URL: статика, категории журнала, статьи.

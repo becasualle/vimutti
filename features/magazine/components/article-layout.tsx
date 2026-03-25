@@ -6,9 +6,7 @@ import Image, { type StaticImageData } from 'next/image';
 import Link from 'next/link';
 import { TypographyH1 } from '@/components/ui/typography/heading-elements/typography-h1';
 import type { RelatedArticle } from '@/features/magazine/lib/get-all-articles';
-import { SITE_NAME } from '@/lib/site';
-
-const BASE_URL = 'https://www.vimutti.ru';
+import { BASE_URL, SITE_NAME } from '@/lib/site';
 
 type ArticleLayoutProps = {
   children: React.ReactNode;

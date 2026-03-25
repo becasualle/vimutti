@@ -20,10 +20,7 @@ import { getArticleHeroImage } from '@/features/magazine/lib/article-hero-images
 import { getSubDirectionsForPath } from '@/features/magazine/lib/get-category-tree';
 import { importArticleMdx } from '@/features/magazine/lib/load-article-mdx';
 import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
-import { SITE_NAME } from '@/lib/site';
-
-/** Canonical base URL for absolute links in metadata. */
-const BASE_URL = 'https://www.vimutti.ru';
+import { BASE_URL, SITE_NAME } from '@/lib/site';
 
 /**
  * Resolves catch-all route segments into a path string and whether it points to an article.
