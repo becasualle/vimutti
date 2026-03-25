@@ -79,9 +79,17 @@ export function articleToCard(a: ArticleFrontmatter): ArticleListCard {
 /** Related article for internal linking (SEO and UX). */
 export type RelatedArticle = { path: string; title: string; segments: string[] };
 
+/** Length of the shared prefix from index 0 between two category segment arrays (order matters). */
+function sharedCategoryPrefixLength(a: string[], b: string[]): number {
+  const n = Math.min(a.length, b.length);
+  let i = 0;
+  while (i < n && a[i] === b[i]) i++;
+  return i;
+}
+
 /**
- * Похожие статьи по общей категории (полное совпадение префикса или пересечение сегментов) и пересечению тегов;
- * текущая статья исключается. Сортировка: сначала релевантность (категория, затем число общих тегов), затем дата по убыванию.
+ * Похожие статьи по глубине общего префикса категории и пересечению тегов;
+ * текущая статья исключается. Сортировка: сначала релевантность (длина префикса категории, затем число общих тегов), затем дата по убыванию.
  *
  * @param currentPath — путь статьи без префикса `/magazine`, например `psychology/cbt/article`.
  * @param category — массив сегментов категории из frontmatter текущей статьи.
@@ -101,16 +109,10 @@ export async function getRelatedArticles(
   const scored = articles
     .filter((a) => a.path !== currentPath)
     .map((a) => {
-      const categoryMatch =
-        category.length > 0 && a.category.length >= category.length
-          ? category.every((seg, i) => a.category[i] === seg)
-            ? 2
-            : a.category.some((seg) => category.includes(seg))
-              ? 1
-              : 0
-          : 0;
+      const prefixLen =
+        category.length > 0 ? sharedCategoryPrefixLength(category, a.category) : 0;
       const tagOverlap = a.tags?.filter((t) => tagSet.has(t)).length ?? 0;
-      return { article: a, score: categoryMatch * 10 + tagOverlap };
+      return { article: a, score: prefixLen * 10 + tagOverlap };
     })
     .filter(({ score }) => score > 0)
     .sort(
