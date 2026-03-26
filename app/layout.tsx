@@ -6,19 +6,14 @@ import { ThemeProvider } from 'next-themes';
 
 import { MagazineHeader } from '@/features/magazine/components/magazine-header';
 import { getCategoryTree } from '@/features/magazine/lib/get-category-tree';
-import { SITE_NAME } from '@/lib/site';
+import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from '@/lib/site';
 
 export const metadata = {
-  metadataBase: new URL('https://www.vimutti.ru'),
+  metadataBase: new URL(BASE_URL),
   alternates: { canonical: '/' },
   title: SITE_NAME,
-  description:
-    'Обретите эмоциональный покой и свободу благодаря проверенным инструментам психологии, философии и буддизма.',
+  description: SITE_DESCRIPTION,
   openGraph: {
-    title: SITE_NAME,
-    description:
-      'Обретите эмоциональный покой и свободу благодаря проверенным инструментам психологии, философии и буддизма.',
-    url: 'https://www.vimutti.ru/',
     siteName: SITE_NAME,
     images: [],
     locale: 'ru_RU',
@@ -26,10 +21,7 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: SITE_NAME,
-    description:
-      'Обретите эмоциональный покой и свободу благодаря проверенным инструментам психологии, философии и буддизма.',
-    images: ['https://www.vimutti.ru/'],
+    images: [`${BASE_URL}/`],
   },
 };
 

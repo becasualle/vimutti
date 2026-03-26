@@ -2,12 +2,19 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Базовые Tailwind-классы визуальной «карточки» (фон, бордер, тень, вертикальный стек).
+ * Вынесены для переиспользования там, где нужен тот же вид без обёртки {@link Card} (например список статей).
+ */
+export const cardBaseClasses =
+  "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        cardBaseClasses,
         className
       )}
       {...props}

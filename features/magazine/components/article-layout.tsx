@@ -4,11 +4,10 @@
  */
 import Image, { type StaticImageData } from 'next/image';
 import Link from 'next/link';
-import { TypographyH1 } from '@/components/ui/typography/heading-elements/typography-h1';
+import { TypographyH1 } from '@/components/ui/typography';
 import type { RelatedArticle } from '@/features/magazine/lib/get-all-articles';
-import { SITE_NAME } from '@/lib/site';
-
-const BASE_URL = 'https://www.vimutti.ru';
+import { magazineHref } from '@/features/magazine/lib/magazine-path';
+import { BASE_URL, SITE_NAME } from '@/lib/site';
 
 type ArticleLayoutProps = {
   children: React.ReactNode;
@@ -141,9 +140,9 @@ export default function ArticleLayout({
           <h2 className="mb-4 text-xl font-semibold">Похожие статьи</h2>
           <ul className="space-y-2">
             {relatedArticles.map((a) => (
-              <li key={a.slug}>
+              <li key={a.path}>
                 <Link
-                  href={`/magazine/${a.slug}`}
+                  href={magazineHref(a.segments)}
                   className="text-primary underline-offset-4 hover:underline"
                 >
                   {a.title}

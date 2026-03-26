@@ -1,20 +1,46 @@
+/**
+ * @file Сводный доступ к статьям журнала: загрузка frontmatter из всех MDX (кэш React), фильтр по категории,
+ * пути категорий для SSG, карточки списков, подбор похожих материалов.
+ */
 import { cache } from 'react';
+import { categorySharedPrefixLength, categoryStartsWith } from '@/features/magazine/lib/category-utils';
+import { hasCategoryLabelEntry } from '@/features/magazine/lib/category-labels';
 import { importArticleMdx } from '@/features/magazine/lib/load-article-mdx';
 import { getAllSlugs } from '@/features/magazine/lib/slugs-generator';
 import type { ArticleFrontmatter, ArticleListCard } from '@/features/magazine/types';
+
+let warnedMissingCategoryLabels = false;
+
+function warnMissingCategoryLabelsOnce(articles: ArticleFrontmatter[]): void {
+  if (warnedMissingCategoryLabels) return;
+  warnedMissingCategoryLabels = true;
+  const segments = new Set<string>();
+  for (const a of articles) {
+    for (const seg of a.category) {
+      segments.add(seg);
+    }
+  }
+  const missing = [...segments].filter((s) => !hasCategoryLabelEntry(s)).sort();
+  if (missing.length === 0) return;
+  console.warn(
+    '[magazine] Сегменты category без записей в LABELS/ROOT_LABELS (подпись — Title Case): ' +
+      missing.join(', ')
+  );
+}
 
 async function getAllArticlesUncached(): Promise<ArticleFrontmatter[]> {
   const slugs = getAllSlugs();
 
   const articles = await Promise.all(
     slugs.map(async (parts): Promise<ArticleFrontmatter> => {
-      const slugPath = parts.join('/');
+      const articlePath = parts.join('/');
       const {
         frontmatter: { title, description, date, tags, category },
       } = await importArticleMdx(parts);
 
       return {
-        slug: slugPath,
+        path: articlePath,
+        segments: parts,
         title: title ?? '',
         description: description ?? '',
         date: date ?? '',
@@ -23,6 +49,8 @@ async function getAllArticlesUncached(): Promise<ArticleFrontmatter[]> {
       };
     })
   );
+
+  warnMissingCategoryLabelsOnce(articles);
 
   return articles;
 }
@@ -42,11 +70,7 @@ export const getAllArticles = cache(getAllArticlesUncached);
  */
 export async function getArticlesByCategory(categoryPath: string[]): Promise<ArticleFrontmatter[]> {
   const articles = await getAllArticles();
-  return articles.filter(
-    (a) =>
-      a.category.length >= categoryPath.length &&
-      categoryPath.every((seg, i) => a.category[i] === seg)
-  );
+  return articles.filter((a) => categoryStartsWith(a.category, categoryPath));
 }
 
 /** Все префиксы категорий, для которых getArticlesByCategory(path).length > 0. */
@@ -65,7 +89,8 @@ export async function getCategoryPaths(): Promise<string[][]> {
 
 export function articleToCard(a: ArticleFrontmatter): ArticleListCard {
   return {
-    slug: a.slug,
+    path: a.path,
+    segments: a.segments,
     title: a.title,
     content: a.description,
     action: 'Читать',
@@ -75,20 +100,20 @@ export function articleToCard(a: ArticleFrontmatter): ArticleListCard {
 }
 
 /** Related article for internal linking (SEO and UX). */
-export type RelatedArticle = { slug: string; title: string };
+export type RelatedArticle = { path: string; title: string; segments: string[] };
 
 /**
- * Похожие статьи по общей категории (полное совпадение префикса или пересечение сегментов) и пересечению тегов;
- * текущая статья исключается. Сортировка: сначала релевантность (категория, затем число общих тегов), затем дата по убыванию.
+ * Похожие статьи по глубине общего префикса категории и пересечению тегов;
+ * текущая статья исключается. Сортировка: сначала релевантность (длина префикса категории, затем число общих тегов), затем дата по убыванию.
  *
- * @param currentSlug — slug статьи без префикса `/magazine`, например `psychology/cbt/article`.
+ * @param currentPath — путь статьи без префикса `/magazine`, например `psychology/cbt/article`.
  * @param category — массив сегментов категории из frontmatter текущей статьи.
  * @param tags — теги текущей статьи.
  * @param limit — максимум записей в ответе (по умолчанию 5).
- * @returns `{ slug, title }` для внутренних ссылок и SEO.
+ * @returns `{ path, title }` для внутренних ссылок и SEO.
  */
 export async function getRelatedArticles(
-  currentSlug: string,
+  currentPath: string,
   category: string[],
   tags: string[],
   limit = 5
@@ -97,18 +122,12 @@ export async function getRelatedArticles(
   const tagSet = new Set(tags);
 
   const scored = articles
-    .filter((a) => a.slug !== currentSlug)
+    .filter((a) => a.path !== currentPath)
     .map((a) => {
-      const categoryMatch =
-        category.length > 0 && a.category.length >= category.length
-          ? category.every((seg, i) => a.category[i] === seg)
-            ? 2
-            : a.category.some((seg) => category.includes(seg))
-              ? 1
-              : 0
-          : 0;
+      const prefixLen =
+        category.length > 0 ? categorySharedPrefixLength(category, a.category) : 0;
       const tagOverlap = a.tags?.filter((t) => tagSet.has(t)).length ?? 0;
-      return { article: a, score: categoryMatch * 10 + tagOverlap };
+      return { article: a, score: prefixLen * 10 + tagOverlap };
     })
     .filter(({ score }) => score > 0)
     .sort(
@@ -117,5 +136,9 @@ export async function getRelatedArticles(
 
   return scored
     .slice(0, limit)
-    .map(({ article }) => ({ slug: article.slug, title: article.title }));
+    .map(({ article }) => ({
+      path: article.path,
+      title: article.title,
+      segments: article.segments,
+    }));
 }

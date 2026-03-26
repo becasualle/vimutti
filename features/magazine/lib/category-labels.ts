@@ -1,5 +1,5 @@
 /**
- * Человекочитаемые подписи для slug’ов категорий в URL и в хлебных крошках.
+ * @file Человекочитаемые подписи для slug’ов категорий в URL и в хлебных крошках.
  * Корневые разделы подтягиваются из {@link ROOT_CATEGORIES}; остальные — из `LABELS`.
  * Неизвестные slug’и превращаются в Title Case по дефисам.
  */
@@ -30,6 +30,20 @@ const LABELS: Record<string, string> = {
     'Работа с последствиями травмы и гореванием',
   'psihoterapiya-zavisimostej': 'Психотерапия зависимостей',
 };
+
+/** Slugs, для которых задана явная подпись в {@link LABELS} или корневых {@link ROOT_LABELS}. */
+const KNOWN_CATEGORY_LABEL_SEGMENTS: ReadonlySet<string> = new Set([
+  ...Object.keys(ROOT_LABELS),
+  ...Object.keys(LABELS),
+]);
+
+/**
+ * Есть ли явная подпись для сегмента пути категории (не Title Case по дефисам).
+ * Используется при проверке данных на сборке / при загрузке статей.
+ */
+export function hasCategoryLabelEntry(segment: string): boolean {
+  return KNOWN_CATEGORY_LABEL_SEGMENTS.has(segment);
+}
 
 function slugToLabel(slug: string): string {
   return (

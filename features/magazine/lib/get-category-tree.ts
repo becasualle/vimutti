@@ -7,6 +7,7 @@
 import { cache } from 'react';
 import { getCategorySegmentLabel } from '@/features/magazine/lib/category-labels';
 import { CATEGORIES_META, CATEGORY_ORDER } from '@/features/magazine/lib/category-meta';
+import { categoryStartsWith } from '@/features/magazine/lib/category-utils';
 import { getAllArticles } from '@/features/magazine/lib/get-all-articles';
 import { magazineHref } from '@/features/magazine/lib/magazine-path';
 import type { ArticleFrontmatter } from '@/features/magazine/types';
@@ -168,7 +169,7 @@ function directionsForArticles(
 
   for (const a of articles) {
     if (a.category.length <= parentPath.length) continue;
-    if (!parentPath.every((seg, i) => a.category[i] === seg)) continue;
+    if (!categoryStartsWith(a.category, parentPath)) continue;
     const nextSeg = a.category[parentPath.length];
     counts.set(nextSeg, (counts.get(nextSeg) ?? 0) + 1);
   }

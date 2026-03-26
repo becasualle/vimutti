@@ -18,6 +18,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { getCategorySegmentLabel } from '@/features/magazine/lib/category-labels';
+import { magazineHref } from '@/features/magazine/lib/magazine-path';
 
 type MagazineBreadcrumbsProps = {
   /**
@@ -67,13 +68,13 @@ export function MagazineBreadcrumbs({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/magazine">Статьи</Link>
+                  <Link href={magazineHref([])}>Статьи</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
 
               {articleMode
                 ? categorySegments.map((seg, i) => {
-                    const href = `/magazine/${categorySegments.slice(0, i + 1).join('/')}`;
+                    const href = magazineHref(categorySegments.slice(0, i + 1));
                     return (
                       <React.Fragment key={href}>
                         <BreadcrumbSeparator />
@@ -87,7 +88,7 @@ export function MagazineBreadcrumbs({
                   })
                 : categorySegments.slice(0, -1).map((seg, i) => {
                     const prefix = categorySegments.slice(0, i + 1);
-                    const href = `/magazine/${prefix.join('/')}`;
+                    const href = magazineHref(prefix);
                     return (
                       <React.Fragment key={href}>
                         <BreadcrumbSeparator />
