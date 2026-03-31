@@ -21,6 +21,11 @@ export const ROOT_CATEGORIES = [
     description:
       'Практические упражнения и инструменты из психотерапии, коучинга и направлений, основанных на осознанности',
   },
+  {
+    slug: 'guides',
+    label: 'Руководства',
+    description: 'Практические руководства по развитию навыков и решению психологических проблем',
+  },
 ] as const;
 
 export type RootCategorySlug = (typeof ROOT_CATEGORIES)[number]['slug'];
