@@ -18,6 +18,7 @@ const LABELS: Record<string, string> = {
   social: 'Социальная психология',
   coaching: 'Коучинг',
   behavioral: 'Бихевиоризм',
+  existential: 'Экзистенциальный анализ и логотерапия',
   'psychodynamic-psychology': 'Психодинамическая психология',
   'classical-psychoanalysis': 'Классический психоанализ',
   'analytical-psychology': 'Аналитическая психология',
