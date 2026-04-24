@@ -1,4 +1,4 @@
-import { Mermaid } from '@theguild/remark-mermaid/mermaid';
+import { MdxMermaid } from '@/components/mdx/mdx-mermaid';
 import type { MDXComponents } from 'mdx/types';
 import { ButtonLink } from '@/components/ui/button-link';
 import {
@@ -33,7 +33,7 @@ const components: MDXComponents = {
   tr: TypographyTableRow,
   th: TypographyTableHeader,
   td: TypographyTableCell,
-  mermaid: Mermaid,
+  mermaid: MdxMermaid,
 };
 
 export function useMDXComponents(): MDXComponents {
