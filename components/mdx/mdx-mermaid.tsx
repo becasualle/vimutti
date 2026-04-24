@@ -1,55 +1,78 @@
-'use client'
+'use client';
 
-import { useEffect, useId, useRef, useState, type RefObject } from 'react'
-import { cn } from '@/lib/utils'
+import { useEffect, useId, useRef, useState, type RefObject } from 'react';
+import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
+import { cn } from '@/lib/utils';
 
 type MdxMermaidProps = {
-  chart: string
-}
+  chart: string;
+};
 
-type PanZoomInstance = {
-  destroy: () => void
-  zoom: (scale: number) => void
-}
+/** Strip Mermaid's auto-generated inline max-width/width so the SVG keeps its natural pixel size. */
+const stripSvgAutoStyles = (rawSvg: string): string => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(rawSvg, 'image/svg+xml');
+  const svg = doc.querySelector('svg');
+  if (!svg) return rawSvg;
 
-// Defer rendering until the user scrolls to the diagram
+  const style = svg.getAttribute('style') ?? '';
+  const cleaned = style
+    .split(';')
+    .map((s) => s.trim())
+    .filter((s) => s && !s.startsWith('max-width') && !s.startsWith('width'))
+    .join('; ');
+
+  if (cleaned) svg.setAttribute('style', cleaned);
+  else svg.removeAttribute('style');
+
+  return svg.outerHTML;
+};
+
 const useIsVisible = (ref: RefObject<HTMLDivElement | null>): boolean => {
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!ref.current) return
+    if (!ref.current) return;
     const io = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        setVisible(true)
-        io.disconnect()
+        setVisible(true);
+        io.disconnect();
       }
-    })
-    io.observe(ref.current)
-    return () => io.disconnect()
-  }, [ref])
+    });
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, [ref]);
 
-  return visible
-}
+  return visible;
+};
 
 export const MdxMermaid = ({ chart }: MdxMermaidProps) => {
-  const id = `mermaid-${useId().replaceAll(':', '')}`
-  // Separate refs: outer div is the IntersectionObserver target,
-  // inner div receives the raw SVG via innerHTML (outside React's control)
-  const wrapperRef = useRef<HTMLDivElement>(null)
-  const svgContainerRef = useRef<HTMLDivElement>(null)
-  const panZoomRef = useRef<PanZoomInstance | null>(null)
-  const isVisible = useIsVisible(wrapperRef)
+  const id = `mermaid-${useId().replaceAll(':', '')}`;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [svgHtml, setSvgHtml] = useState('');
+  const isVisible = useIsVisible(containerRef);
 
+  // Render Mermaid → SVG string; re-render on theme change
   useEffect(() => {
-    if (!isVisible || !svgContainerRef.current) return
+    if (!isVisible) return;
 
-    let cancelled = false
+    let cancelled = false;
+    const root = document.documentElement;
 
-    const renderChart = async () => {
-      const { default: mermaid } = await import('mermaid')
-      const isDark =
-        document.documentElement.classList.contains('dark') ||
-        document.documentElement.getAttribute('data-theme') === 'dark'
+    // Watch for light/dark mode toggles
+    const mo = new MutationObserver(() => void renderChart());
+    mo.observe(root, { attributes: true });
+
+    void renderChart();
+
+    return () => {
+      cancelled = true;
+      mo.disconnect();
+    };
+
+    async function renderChart() {
+      const { default: mermaid } = await import('mermaid');
+      const isDark = root.classList.contains('dark') || root.getAttribute('data-theme') === 'dark';
 
       mermaid.initialize({
         startOnLoad: false,
@@ -58,73 +81,53 @@ export const MdxMermaid = ({ chart }: MdxMermaidProps) => {
         theme: isDark ? 'dark' : 'default',
         themeVariables: { fontSize: '16px' },
         flowchart: { useMaxWidth: false, padding: 4 },
-      })
+      });
 
       try {
-        const { svg } = await mermaid.render(id, chart.replaceAll('\\n', '\n'))
-        if (cancelled || !svgContainerRef.current) return
-
-        // Direct DOM insertion — React never touches svgContainerRef's children
-        svgContainerRef.current.innerHTML = svg
-
-        const svgEl = svgContainerRef.current.querySelector<SVGSVGElement>('svg')
-        if (!svgEl) return
-
-        svgEl.style.width = '100%'
-        svgEl.style.height = '100%'
-        svgEl.style.maxWidth = 'none'
-
-        const mod = await import('svg-pan-zoom')
-        if (cancelled || !svgEl.isConnected) return
-
-        const factory = (mod.default ?? mod) as unknown as (
-          el: SVGSVGElement,
-          opts: object,
-        ) => PanZoomInstance
-
-        panZoomRef.current?.destroy()
-        panZoomRef.current = factory(svgEl, {
-          zoomEnabled: true,
-          panEnabled: true,
-          controlIconsEnabled: false,
-          mouseWheelZoomEnabled: true,
-          dblClickZoomEnabled: true,
-          preventMouseEventsDefault: true,
-          fit: false,
-          center: true,
-          minZoom: 0.1,
-          maxZoom: 10,
-        })
-        panZoomRef.current.zoom(1)
+        const { svg } = await mermaid.render(id, chart.replaceAll('\\n', '\n'));
+        if (!cancelled) setSvgHtml(stripSvgAutoStyles(svg));
       } catch (err) {
-        console.error('Mermaid render error:', err)
+        console.error('Mermaid render error:', err);
       }
     }
+  }, [chart, id, isVisible]);
 
-    void renderChart()
-
-    return () => {
-      cancelled = true
-      panZoomRef.current?.destroy()
-      panZoomRef.current = null
-    }
-  }, [chart, id, isVisible])
+  // Notice: The manual BBox calculation useEffect was completely removed!
 
   return (
     <figure className="my-6 w-full">
       <div
-        ref={wrapperRef}
-        aria-label="Interactive diagram"
+        ref={containerRef}
+        role="region"
+        aria-label="Интерактивная схема"
         className={cn(
-          'h-[60vh] min-h-[400px] w-full overflow-hidden',
+          'h-[60vh] min-h-[300px] w-full overflow-hidden',
           'rounded-lg border border-border/60 bg-muted/15',
-          'cursor-grab active:cursor-grabbing touch-none select-none',
+          'cursor-grab active:cursor-grabbing'
         )}
       >
-        <div ref={svgContainerRef} className="h-full w-full" />
+        {svgHtml && (
+          <TransformWrapper
+            minScale={0.05}
+            maxScale={10}
+            initialScale={1} // Enforces the 100% readable size
+            centerOnInit={true} // Automatically centers the diagram on load
+            limitToBounds={false}
+            doubleClick={{ mode: 'reset' }}
+            wheel={{ step: 0.08 }}
+          >
+            <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }}>
+              {/* Ensure the wrapper div takes up space properly */}
+              <div
+                className="w-full h-full flex items-center justify-center"
+                dangerouslySetInnerHTML={{ __html: svgHtml }}
+              />
+            </TransformComponent>
+          </TransformWrapper>
+        )}
       </div>
     </figure>
-  )
-}
+  );
+};
 
-export const Mermaid = MdxMermaid
+export const Mermaid = MdxMermaid;
