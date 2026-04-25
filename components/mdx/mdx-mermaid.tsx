@@ -1,8 +1,35 @@
-'use client';
+'use client'
 
-import { useEffect, useId, useRef, useState, type RefObject } from 'react';
-import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
-import { cn } from '@/lib/utils';
+import { useEffect, useId, useRef, useState, type RefObject } from 'react'
+import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
+import { cn } from '@/lib/utils'
+
+/**
+ * Injected into the page via <style> so the rules apply inside the SVG shadow DOM.
+ * Fixes text clipping on Android where system fonts (Roboto, Samsung Sans, etc.) are
+ * slightly wider than the desktop fonts Mermaid used when calculating node sizes.
+ */
+const MERMAID_STYLES = `
+  /* Let node rects and groups overflow — fixes clipped labels on Android */
+  .mermaid-diagram svg,
+  .mermaid-diagram svg * {
+    overflow: visible;
+  }
+  /* Re-clip only the outermost SVG so the diagram doesn't bleed outside the container */
+  .mermaid-diagram > svg {
+    overflow: hidden;
+  }
+  /* foreignObject (used when Mermaid renders Markdown labels) must stay visible */
+  .mermaid-diagram foreignObject {
+    overflow: visible !important;
+  }
+  /* Normal text nodes: allow wrapping */
+  .mermaid-diagram .node text,
+  .mermaid-diagram .nodeLabel {
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+`
 
 type MdxMermaidProps = {
   chart: string;
@@ -24,6 +51,9 @@ const stripSvgAutoStyles = (rawSvg: string): string => {
 
   if (cleaned) svg.setAttribute('style', cleaned);
   else svg.removeAttribute('style');
+
+  // Allow inner groups/rects to overflow so Android fonts don't clip node labels
+  svg.setAttribute('overflow', 'visible');
 
   return svg.outerHTML;
 };
@@ -96,32 +126,31 @@ export const MdxMermaid = ({ chart }: MdxMermaidProps) => {
 
   return (
     <figure className="my-6 w-full">
+      {/* Scoped styles: fix Android text clipping inside SVG nodes */}
+      <style>{MERMAID_STYLES}</style>
       <div
         ref={containerRef}
         role="region"
         aria-label="Интерактивная схема"
         className={cn(
+          'mermaid-diagram',
           'h-[60vh] min-h-[300px] w-full overflow-hidden',
           'rounded-lg border border-border/60 bg-muted/15',
-          'cursor-grab active:cursor-grabbing'
+          'cursor-grab active:cursor-grabbing',
         )}
       >
         {svgHtml && (
           <TransformWrapper
             minScale={0.05}
             maxScale={10}
-            initialScale={1} // Enforces the 100% readable size
-            centerOnInit={true} // Automatically centers the diagram on load
+            initialScale={1}
+            centerOnInit
             limitToBounds={false}
             doubleClick={{ mode: 'reset' }}
             wheel={{ step: 0.08 }}
           >
             <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }}>
-              {/* Ensure the wrapper div takes up space properly */}
-              <div
-                className="w-full h-full flex items-center justify-center"
-                dangerouslySetInnerHTML={{ __html: svgHtml }}
-              />
+              <div dangerouslySetInnerHTML={{ __html: svgHtml }} />
             </TransformComponent>
           </TransformWrapper>
         )}
