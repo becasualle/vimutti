@@ -4,105 +4,108 @@ import { useEffect, useId, useRef, useState, type RefObject } from 'react'
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { cn } from '@/lib/utils'
 
-/**
- * Injected into the page via <style> so the rules apply inside the SVG shadow DOM.
- * Fixes text clipping on Android where system fonts (Roboto, Samsung Sans, etc.) are
- * slightly wider than the desktop fonts Mermaid used when calculating node sizes.
- */
-const MERMAID_STYLES = `
-  /* Let node rects and groups overflow — fixes clipped labels on Android */
-  .mermaid-diagram svg,
-  .mermaid-diagram svg * {
-    overflow: visible;
-  }
-  /* Re-clip only the outermost SVG so the diagram doesn't bleed outside the container */
-  .mermaid-diagram > svg {
-    overflow: hidden;
-  }
-  /* foreignObject (used when Mermaid renders Markdown labels) must stay visible */
-  .mermaid-diagram foreignObject {
-    overflow: visible !important;
-  }
-  /* Normal text nodes: allow wrapping */
-  .mermaid-diagram .node text,
-  .mermaid-diagram .nodeLabel {
-    white-space: normal !important;
-    word-break: break-word !important;
-  }
-`
-
 type MdxMermaidProps = {
-  chart: string;
-};
+  chart: string
+}
 
-/** Strip Mermaid's auto-generated inline max-width/width so the SVG keeps its natural pixel size. */
-const stripSvgAutoStyles = (rawSvg: string): string => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(rawSvg, 'image/svg+xml');
-  const svg = doc.querySelector('svg');
-  if (!svg) return rawSvg;
+type SvgData = {
+  html: string
+  /** CSS aspect-ratio value derived from the SVG viewBox, e.g. "824 / 648" */
+  ratio: string
+}
 
-  const style = svg.getAttribute('style') ?? '';
+/**
+ * 1. Strip Mermaid's inline width/max-width that collapse the SVG.
+ * 2. Expand the viewBox by PADDING px on every side so Android system fonts
+ *    (Roboto, Samsung Sans …) — which are slightly wider than the desktop
+ *    fonts Mermaid used for layout — don't overflow node boundaries.
+ * 3. Return the CSS aspect-ratio so the container can match the SVG
+ *    without a fixed px height.
+ */
+const VIEWBOX_PAD = 24
+
+const parseSvg = (rawSvg: string): SvgData => {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(rawSvg, 'image/svg+xml')
+  const svg = doc.querySelector('svg')
+  if (!svg) return { html: rawSvg, ratio: '16 / 9' }
+
+  // Remove inline width / max-width Mermaid injects
+  const style = svg.getAttribute('style') ?? ''
   const cleaned = style
     .split(';')
     .map((s) => s.trim())
     .filter((s) => s && !s.startsWith('max-width') && !s.startsWith('width'))
-    .join('; ');
+    .join('; ')
+  if (cleaned) svg.setAttribute('style', cleaned)
+  else svg.removeAttribute('style')
 
-  if (cleaned) svg.setAttribute('style', cleaned);
-  else svg.removeAttribute('style');
+  // Expand viewBox so wider mobile fonts still fit inside node rects
+  let ratio = '16 / 9'
+  const viewBox = svg.getAttribute('viewBox')
+  if (viewBox) {
+    const parts = viewBox.trim().split(/\s+/).map(Number)
+    if (parts.length === 4 && parts[2]! > 0 && parts[3]! > 0) {
+      const [x, y, w, h] = parts as [number, number, number, number]
+      const p = VIEWBOX_PAD
+      const nw = w + p * 2
+      const nh = h + p * 2
+      svg.setAttribute('viewBox', `${x - p} ${y - p} ${nw} ${nh}`)
+      ratio = `${nw} / ${nh}`
+    }
+  }
 
-  // Allow inner groups/rects to overflow so Android fonts don't clip node labels
-  svg.setAttribute('overflow', 'visible');
+  // Fill the container; height driven by aspect-ratio on the wrapper
+  svg.setAttribute('width', '100%')
+  svg.setAttribute('height', '100%')
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet')
 
-  return svg.outerHTML;
-};
+  return { html: svg.outerHTML, ratio }
+}
 
 const useIsVisible = (ref: RefObject<HTMLDivElement | null>): boolean => {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    if (!ref.current) return;
+    if (!ref.current) return
     const io = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        setVisible(true);
-        io.disconnect();
+        setVisible(true)
+        io.disconnect()
       }
-    });
-    io.observe(ref.current);
-    return () => io.disconnect();
-  }, [ref]);
+    })
+    io.observe(ref.current)
+    return () => io.disconnect()
+  }, [ref])
 
-  return visible;
-};
+  return visible
+}
 
 export const MdxMermaid = ({ chart }: MdxMermaidProps) => {
-  const id = `mermaid-${useId().replaceAll(':', '')}`;
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [svgHtml, setSvgHtml] = useState('');
-  const isVisible = useIsVisible(containerRef);
+  const id = `mermaid-${useId().replaceAll(':', '')}`
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [svgData, setSvgData] = useState<SvgData | null>(null)
+  const isVisible = useIsVisible(containerRef)
 
-  // Render Mermaid → SVG string; re-render on theme change
+  // Render Mermaid → SVG; re-render when theme changes
   useEffect(() => {
-    if (!isVisible) return;
+    if (!isVisible) return
 
-    let cancelled = false;
-    const root = document.documentElement;
-
-    // Watch for light/dark mode toggles
-    const mo = new MutationObserver(() => void renderChart());
-    mo.observe(root, { attributes: true });
-
-    void renderChart();
-
+    let cancelled = false
+    const root = document.documentElement
+    const mo = new MutationObserver(() => void renderChart())
+    mo.observe(root, { attributes: true })
+    void renderChart()
     return () => {
-      cancelled = true;
-      mo.disconnect();
-    };
+      cancelled = true
+      mo.disconnect()
+    }
 
     async function renderChart() {
-      const { default: mermaid } = await import('mermaid');
-      const isDark = root.classList.contains('dark') || root.getAttribute('data-theme') === 'dark';
+      const { default: mermaid } = await import('mermaid')
+      const isDark =
+        root.classList.contains('dark') ||
+        root.getAttribute('data-theme') === 'dark'
 
       mermaid.initialize({
         startOnLoad: false,
@@ -110,38 +113,40 @@ export const MdxMermaid = ({ chart }: MdxMermaidProps) => {
         fontFamily: 'inherit',
         theme: isDark ? 'dark' : 'default',
         themeVariables: { fontSize: '16px' },
-        flowchart: { useMaxWidth: false, padding: 4 },
-      });
+        // padding: internal space between label text and node border;
+        // larger value → nodes are wider/taller → more room for wide fonts
+        flowchart: { useMaxWidth: false, padding: 12 },
+      })
 
       try {
-        const { svg } = await mermaid.render(id, chart.replaceAll('\\n', '\n'));
-        if (!cancelled) setSvgHtml(stripSvgAutoStyles(svg));
+        const { svg } = await mermaid.render(id, chart.replaceAll('\\n', '\n'))
+        if (!cancelled) setSvgData(parseSvg(svg))
       } catch (err) {
-        console.error('Mermaid render error:', err);
+        console.error('Mermaid render error:', err)
       }
     }
-  }, [chart, id, isVisible]);
-
-  // Notice: The manual BBox calculation useEffect was completely removed!
+  }, [chart, id, isVisible])
 
   return (
     <figure className="my-6 w-full">
-      {/* Scoped styles: fix Android text clipping inside SVG nodes */}
-      <style>{MERMAID_STYLES}</style>
       <div
         ref={containerRef}
         role="region"
         aria-label="Интерактивная схема"
         className={cn(
-          'mermaid-diagram',
-          'h-[60vh] min-h-[300px] w-full overflow-hidden',
+          'w-full overflow-hidden',
           'rounded-lg border border-border/60 bg-muted/15',
           'cursor-grab active:cursor-grabbing',
+          // Placeholder height before SVG is ready
+          !svgData && 'min-h-[200px]',
         )}
+        // Container height is driven by the SVG's own aspect ratio —
+        // no px/vh values, so it grows/shrinks with the diagram on every device.
+        style={svgData ? { aspectRatio: svgData.ratio } : undefined}
       >
-        {svgHtml && (
+        {svgData && (
           <TransformWrapper
-            minScale={0.05}
+            minScale={0.1}
             maxScale={10}
             initialScale={1}
             centerOnInit
@@ -150,13 +155,16 @@ export const MdxMermaid = ({ chart }: MdxMermaidProps) => {
             wheel={{ step: 0.08 }}
           >
             <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }}>
-              <div dangerouslySetInnerHTML={{ __html: svgHtml }} />
+              <div
+                style={{ width: '100%', height: '100%' }}
+                dangerouslySetInnerHTML={{ __html: svgData.html }}
+              />
             </TransformComponent>
           </TransformWrapper>
         )}
       </div>
     </figure>
-  );
-};
+  )
+}
 
-export const Mermaid = MdxMermaid;
+export const Mermaid = MdxMermaid
