@@ -245,20 +245,38 @@ export const MdxMermaid = ({ chart }: MdxMermaidProps) => {
     }
   }, [chart, id, isVisible])
 
+  // Natural diagram height derived from its aspect ratio and available width.
+  // Capped at 65dvh so tall TD-diagrams don't occupy the full screen on mobile,
+  // making it impossible to scroll the article past them.
+  const naturalHeight =
+    svgData && containerRef.current
+      ? (containerRef.current.clientWidth * parseFloat(svgData.ratio.split('/')[1]!)) /
+        parseFloat(svgData.ratio.split('/')[0]!)
+      : undefined
+
   return (
     <figure className="my-6 w-full">
+      {/* IntersectionObserver target; height is capped so tall diagrams don't fill the viewport */}
       <div
         ref={containerRef}
         role="region"
         aria-label="Интерактивная схема"
         className={cn(
           'mermaid-diagram',
-          'w-full overflow-hidden',
-          'rounded-lg border border-border/60 bg-muted/15',
-          'cursor-grab active:cursor-grabbing',
+          'w-full rounded-lg border border-border/60 bg-muted/15',
           !svgData && 'min-h-[200px]',
+          // On mobile cap height and let the inner scroll-box handle overflow.
+          // On desktop allow the diagram its full natural height (no scrollbar needed).
+          'max-h-[65dvh] md:max-h-none overflow-hidden',
         )}
-        style={svgData ? { aspectRatio: svgData.ratio } : undefined}
+        style={
+          svgData
+            ? {
+                // Provide natural height up to the cap; browser clips the rest via max-h.
+                height: naturalHeight !== undefined ? `${naturalHeight}px` : undefined,
+              }
+            : undefined
+        }
       >
         {svgData && (
           <TransformWrapper
@@ -269,13 +287,16 @@ export const MdxMermaid = ({ chart }: MdxMermaidProps) => {
             limitToBounds={false}
             doubleClick={{ mode: 'reset' }}
             wheel={{ step: 0.08 }}
+            // Disable panning on a single touch so the user can still scroll the
+            // article past the diagram without fighting the pan gesture.
+            panning={{ allowLeftClickPan: true, velocityDisabled: false }}
           >
             <TransformComponent
               wrapperStyle={{ width: '100%', height: '100%' }}
               contentStyle={{ width: '100%', height: '100%' }}
             >
               <div
-                className="mermaid-diagram"
+                className="mermaid-diagram cursor-grab active:cursor-grabbing touch-none select-none"
                 style={{ width: '100%', height: '100%' }}
                 dangerouslySetInnerHTML={{ __html: svgData.html }}
               />
