@@ -24,23 +24,7 @@ const FONT_FAMILY =
   'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
 const VIEWBOX_PAD = 24
 const FALLBACK_RATIO = '16 / 9'
-const WRAPPING_WIDTH = 170
-
-const MERMAID_LABEL_STYLES = `
-  .mermaid-diagram foreignObject {
-    overflow: visible;
-  }
-
-  .mermaid-diagram .nodeLabel,
-  .mermaid-diagram .nodeLabel p,
-  .mermaid-diagram .nodeLabel span {
-    box-sizing: border-box;
-    max-width: ${WRAPPING_WIDTH}px;
-    overflow-wrap: anywhere;
-    white-space: normal;
-    word-break: normal;
-  }
-`
+const MAX_LABEL_LINE_CHARS = 22
 
 const parseViewBox = (value: string | null): SvgBBox | null => {
   if (!value) return null
@@ -64,6 +48,48 @@ const padBBox = (bbox: SvgBBox, padding = VIEWBOX_PAD): SvgBBox => ({
   width: bbox.width + padding * 2,
   height: bbox.height + padding * 2,
 })
+
+const wrapWords = (text: string, maxChars = MAX_LABEL_LINE_CHARS): string => {
+  const words = text.trim().split(/\s+/)
+  const lines: string[] = []
+  let line = ''
+
+  for (const word of words) {
+    const next = line ? `${line} ${word}` : word
+    if (line && next.length > maxChars) {
+      lines.push(line)
+      line = word
+    } else {
+      line = next
+    }
+  }
+
+  if (line) lines.push(line)
+  return lines.join('<br/>')
+}
+
+const wrapLabelText = (label: string): string =>
+  label
+    .split(/<br\s*\/?>/i)
+    .map((part) =>
+      part.trim().length > MAX_LABEL_LINE_CHARS ? wrapWords(part) : part,
+    )
+    .join('<br/>')
+
+const wrapFlowchartLabels = (chart: string): string => {
+  const normalized = chart.replaceAll('\\n', '\n')
+
+  return normalized.replace(
+    /([\[{])([^\]{}|]+)([\]}])/g,
+    (match, open: string, label: string, close: string) => {
+      const trimmed = label.trim()
+      if (!trimmed) return match
+      if (trimmed.length <= MAX_LABEL_LINE_CHARS) return match
+
+      return `${open}${wrapLabelText(label)}${close}`
+    },
+  )
+}
 
 const stripAutoSizing = (svg: SVGSVGElement): void => {
   const style = svg.getAttribute('style') ?? ''
@@ -202,7 +228,6 @@ export const MdxMermaid = ({ chart }: MdxMermaidProps) => {
         flowchart: {
           useMaxWidth: false,
           htmlLabels: true,
-          wrappingWidth: WRAPPING_WIDTH,
           padding: 12,
         },
       })
@@ -210,7 +235,7 @@ export const MdxMermaid = ({ chart }: MdxMermaidProps) => {
       try {
         if ('fonts' in document) await document.fonts.ready
         if (cancelled) return
-        const { svg } = await mermaid.render(id, chart.replaceAll('\\n', '\n'))
+        const { svg } = await mermaid.render(id, wrapFlowchartLabels(chart))
         if (cancelled) return
         const bbox = measureContentBBox(svg)
         setSvgData(parseSvg(svg, bbox))
@@ -222,7 +247,6 @@ export const MdxMermaid = ({ chart }: MdxMermaidProps) => {
 
   return (
     <figure className="my-6 w-full">
-      <style>{MERMAID_LABEL_STYLES}</style>
       <div
         ref={containerRef}
         role="region"
